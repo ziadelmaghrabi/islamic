@@ -1,10 +1,11 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <title>القرآن الكريم</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+
 <style>
 :root{
   --gold:#d4af37;
@@ -13,79 +14,184 @@
   --border:#444;
   --text:#f0f0f0;
   --highlight:#ffcc00;
-  --counter-bg:#2e2e2e;
-  --counter-glow:#ffcc00;
 }
-body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);margin:0;padding:0;}
-.app{display:flex;height:100vh;flex-direction:row;}
-.sidebar{width:280px;background:var(--panel);border-left:1px solid var(--border);padding:20px;overflow-y:auto;scrollbar-width:thin;scrollbar-color: var(--highlight) var(--panel);}
-.sidebar::-webkit-scrollbar { width:8px; }
-.sidebar::-webkit-scrollbar-track { background:var(--panel); border-radius:10px; }
-.sidebar::-webkit-scrollbar-thumb { background: linear-gradient(180deg,var(--highlight),#d4af37); border-radius:10px; }
-.sidebar::-webkit-scrollbar-thumb:hover { background:#ffdd33; }
 
-.sidebar h3{color:var(--gold);margin-bottom:10px;font-size:18px;font-weight:bold;text-align:right;}
-.sidebar button{width:100%;padding:10px;margin-bottom:10px;border:none;border-radius:12px;background:var(--highlight);cursor:pointer;font-size:16px;color:#111;font-weight:bold;transition: background 0.3s;}
-.sidebar button:hover{background:#d4af37;color:#fff;}
-.sidebar input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin-bottom:15px;font-family:inherit;background:#333;color:#fff;}
-.surah-item{padding:10px;border-bottom:1px solid var(--border);cursor:pointer;transition: background 0.3s;border-radius:8px;text-align:right;}
-.surah-item:hover{background:#444;}
-.content{flex:1;display:flex;flex-direction:column;position:relative;}
-.header{padding:20px;text-align:center;font-size:32px;color:var(--highlight);font-weight:bold;border-bottom:1px solid var(--border);text-shadow: 1px 1px 3px #000;display:flex;justify-content:space-between;align-items:center;}
-.header-title{flex:1;text-align:center;}
-.font-controls{display:flex;gap:10px;}
-.font-controls button{padding:6px 10px;border-radius:50px;border:none;background:var(--highlight);color:#111;font-weight:bold;cursor:pointer;transition:0.3s;}
-.font-controls button:hover{background:#d4af37;color:#fff;}
-.theme-button{padding:6px 10px;border-radius:50px;border:none;background:var(--highlight);color:#111;font-weight:bold;cursor:pointer;transition:0.3s;}
-.theme-button:hover{background:#d4af37;color:#fff;}
+/* ===== Base ===== */
+body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
+.app{display:flex;height:100vh;}
+.content{flex:1;display:flex;flex-direction:column}
 
-.bismillah{font-size:32px;text-align:center;margin:15px 0;color:var(--highlight);font-weight:bold;transition: all 0.5s ease;}
-.dua{font-size:28px;color:#fff;font-weight:bold;text-align:center;margin:20px 0;}
-.circular-counters{display:flex;justify-content:center;gap:80px;margin-bottom:60px;margin-top:20px;flex-wrap:wrap;}
-.circle-counter{position:relative;width:180px;height:180px;border-radius:50%;display:flex;flex-direction:column;justify-content:center;align-items:center;margin:20px;background: var(--counter-bg);box-shadow: 8px 8px 15px #141414, -8px -8px 15px #3a3a3a;transition: transform 0.3s ease;}
-.circle-counter:hover{transform: scale(1.05);}
-.circle-number{font-size:48px;font-weight:bold;color: var(--counter-glow);z-index:2;}
-.circle-button{margin-top:12px;padding:8px 14px;border:none;border-radius:50px;background:var(--counter-glow);color:#111;font-weight:bold;cursor:pointer;transition:all 0.3s, box-shadow 0.3s;z-index:2;}
-.circle-button:hover{background:#d4af37;color:#fff;box-shadow:0 0 20px var(--counter-glow);transform: scale(1.05);}
-.glow-ring{position:absolute;top:-5px; left:-5px;width:190px; height:190px;border-radius:50%;border:3px solid var(--counter-glow);box-shadow:0 0 15px var(--counter-glow), 0 0 30px rgba(255,204,0,0.5);animation: pulse 2s infinite;z-index:1;}
-@keyframes pulse{0%{transform: scale(1); opacity:0.7;}50%{transform: scale(1.1); opacity:0.9;}100%{transform: scale(1); opacity:0.7;}}
-.reader{flex:1;overflow-y:auto;padding:20px 15px;scroll-behavior: smooth;text-align:center;display:flex;flex-direction:column;align-items:center;}
-.ayah{font-size:28px;line-height:2.5;margin-bottom:30px;background: rgba(255,204,0,0.05);padding:10px 15px;border-radius:12px;display:inline-block;max-width:90%;word-break: break-word;text-align:center;opacity:0;transform: translateY(20px);transition: all 0.5s ease;}
-.ayah.show{opacity:1;transform: translateY(0);}
-.ayah-number{font-size:18px;color:var(--highlight);margin-left:8px;vertical-align: middle;}
-.star{cursor:pointer;color:var(--highlight);font-size:18px;margin-right:6px;}
-.la-ilah{position:absolute;top:50%;left:50%;transform: translate(-50%,-50%);font-size:48px;color:var(--highlight);font-weight:bold;opacity:0;transition: all 1s ease;text-align:center;text-shadow: 2px 2px 6px #000;z-index:999;}
-.footer{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;border-top:1px solid var(--border);font-size:16px;color:var(--gold);}
-.footer .juz-hizb{font-weight:bold;color:var(--highlight);}
-.reader::-webkit-scrollbar{width:6px;}
-.reader::-webkit-scrollbar-thumb{background:var(--highlight);border-radius:10px;}
+/* ===== Header ===== */
+.header{
+  padding:12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border-bottom:1px solid var(--border);
+}
+.menu-btn{
+  display:none;
+  font-size:20px;
+  background:var(--highlight);
+  border:none;
+  border-radius:8px;
+  padding:6px 10px;
+  cursor:pointer;
+}
+.header-title{flex:1;text-align:center;font-size:22px;color:var(--highlight);}
 
+/* ===== Sidebar ===== */
+.sidebar{
+  width:260px;
+  background:var(--panel);
+  border-left:1px solid var(--border);
+  padding:15px;
+  overflow:auto;
+}
+.sidebar h3{margin:10px 0;color:var(--gold)}
+.sidebar input, .sidebar button{
+  width:100%;padding:10px;border-radius:8px;border:none;
+}
+.sidebar button{background:var(--highlight);cursor:pointer;margin-bottom:10px}
+.surah-item{padding:8px;border-bottom:1px solid var(--border);cursor:pointer}
+
+/* ===== Reader ===== */
+.reader{
+  flex:1;
+  overflow:auto;
+  padding:15px;
+  text-align:center;
+}
+.ayah{
+  font-size:22px;
+  line-height:2;
+  margin-bottom:20px;
+}
+
+/* ===== Footer ===== */
+.footer{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 12px;
+  border-top:1px solid var(--border);
+  font-size:14px;
+}
+
+/* ===== Mobile ===== */
 @media(max-width:768px){
-  .app{flex-direction:column;}
-  .sidebar{width:100%;height:auto;border-left:none;border-bottom:1px solid var(--border);}
-  .circular-counters{gap:20px;}
-  .circle-counter{width:140px;height:140px;}
-  .circle-number{font-size:36px;}
-  .circle-button{padding:6px 12px;font-size:14px;}
-  .glow-ring{width:150px;height:150px;top:-5px;left:-5px;}
-  .la-ilah{font-size:32px;}
-  .header{flex-direction:column;gap:10px;}
+  .menu-btn{display:block}
+
+  .sidebar{
+    position:fixed;
+    top:0;
+    right:-100%;
+    height:100vh;
+    width:85%;
+    z-index:999;
+    transition:0.3s;
+  }
+  .sidebar.open{right:0}
+
+  .ayah{
+    font-size:20px;
+    line-height:1.9;
+  }
 }
 </style>
 </head>
+
 <body>
 <div class="app">
-  <div class="sidebar">
-    <h3>🔍 البحث عن السورة</h3>
-    <input id="search" placeholder="اكتب اسم السورة">
-    <h3>📌 القوائم</h3>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h3>🔍 البحث</h3>
+    <input id="search" placeholder="اسم السورة">
     <button onclick="showHome()">🏠 الرئيسية</button>
-    <h3>📖 السور</h3>
     <div id="surahList"></div>
   </div>
 
+  <!-- Content -->
   <div class="content">
     <div class="header">
+      <button class="menu-btn" onclick="toggleMenu()">☰</button>
+      <div class="header-title" id="title">القرآن الكريم</div>
+    </div>
+
+    <div class="reader" id="reader"></div>
+
+    <div class="footer">
+      <div>الجزء: <span id="juz">-</span></div>
+      <div>© زياد أيمن المغربي</div>
+      <div>الحزب: <span id="hizb">-</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const sidebar = document.getElementById('sidebar');
+function toggleMenu(){ sidebar.classList.toggle('open'); }
+
+const reader = document.getElementById("reader");
+const surahList = document.getElementById("surahList");
+const search = document.getElementById("search");
+const title = document.getElementById("title");
+
+/* Load Surahs */
+fetch("https://api.quran.com/api/v4/chapters?language=ar")
+.then(res=>res.json())
+.then(data=>{
+  data.chapters.forEach(s=>{
+    const d=document.createElement("div");
+    d.className="surah-item";
+    d.textContent=s.name_arabic;
+    d.onclick=()=>loadSurah(s.id,s.name_arabic);
+    surahList.appendChild(d);
+  });
+});
+
+search.oninput=()=>{
+  [...surahList.children].forEach(d=>{
+    d.style.display = d.textContent.includes(search.value)?'block':'none';
+  });
+};
+
+function loadSurah(id,name){
+  title.textContent=name;
+  sidebar.classList.remove('open');
+  reader.innerHTML="جاري التحميل...";
+  fetch(`https://api.quran.com/api/v4/verses/by_chapter/${id}?fields=text_uthmani,verse_number,juz_number,hizb_number&per_page=300`)
+  .then(res=>res.json())
+  .then(data=>{
+    reader.innerHTML="";
+    data.verses.forEach(v=>{
+      const a=document.createElement("div");
+      a.className="ayah";
+      a.dataset.juz=v.juz_number;
+      a.dataset.hizb=v.hizb_number;
+      a.innerHTML=`(${v.verse_number}) ${v.text_uthmani}`;
+      reader.appendChild(a);
+    });
+  });
+}
+
+function showHome(){
+  title.textContent="القرآن الكريم";
+  reader.innerHTML="";
+  document.getElementById('juz').textContent='-';
+  document.getElementById('hizb').textContent='-';
+}
+
+reader.addEventListener('scroll',()=>{
+  const a=[...reader.children].find(x=>x.getBoundingClientRect().top>=70);
+  if(a){
+    juz.textContent=a.dataset.juz;
+    hizb.textContent=a.dataset.hizb;
+  }
+});
+</script>
+</body>
+</html>    <div class="header">
       <div class="header-title" id="title">مرحبًا بك في القرآن الكريم 🤍</div>
       <div style="display:flex;gap:10px;">
         <div class="font-controls">
@@ -261,3 +367,4 @@ loadSurahs();
 </script>
 </body>
 </html>
+
