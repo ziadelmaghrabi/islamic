@@ -1,80 +1,255 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>القرآن الكريم</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
 
 <style>
+/* ===================== Theme ===================== */
 :root{
-  --gold:#d4af37;
   --bg:#1e1e1e;
   --panel:#2b2b2b;
   --border:#444;
   --text:#f0f0f0;
   --highlight:#ffcc00;
 }
-
-/* ===== Base ===== */
-body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
-.app{display:flex;height:100vh;}
-.content{flex:1;display:flex;flex-direction:column}
-
-/* ===== Header ===== */
-.header{
-  padding:12px;
-  display:flex;
-  align-items:center;
-  gap:10px;
-  border-bottom:1px solid var(--border);
+.eye-mode{
+  --bg:#121212;
+  --text:#e0dccf;
+  --highlight:#c9b458;
 }
-.menu-btn{
-  display:none;
-  font-size:20px;
-  background:var(--highlight);
-  border:none;
-  border-radius:8px;
-  padding:6px 10px;
-  cursor:pointer;
-}
-.header-title{flex:1;text-align:center;font-size:22px;color:var(--highlight);}
 
-/* ===== Sidebar ===== */
+/* ===================== Base ===================== */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:'Amiri',serif;
+  background:var(--bg);
+  color:var(--text);
+}
+.app{display:flex;height:100vh;overflow:hidden}
+
+/* ===================== Sidebar ===================== */
 .sidebar{
   width:260px;
   background:var(--panel);
   border-left:1px solid var(--border);
-  padding:15px;
+  padding:12px;
   overflow:auto;
 }
-.sidebar h3{margin:10px 0;color:var(--gold)}
-.sidebar input, .sidebar button{
+.sidebar h3{margin:10px 0;color:var(--highlight)}
+.sidebar input,.sidebar button{
   width:100%;padding:10px;border-radius:8px;border:none;
+  font-family:inherit
 }
-.sidebar button{background:var(--highlight);cursor:pointer;margin-bottom:10px}
-.surah-item{padding:8px;border-bottom:1px solid var(--border);cursor:pointer}
+.sidebar input{margin-bottom:8px}
+.sidebar button{background:var(--highlight);cursor:pointer;margin-bottom:8px}
+.surah-item{
+  padding:8px;border-bottom:1px solid var(--border);cursor:pointer
+}
 
-/* ===== Reader ===== */
+/* ===================== Content ===================== */
+.content{flex:1;display:flex;flex-direction:column}
+
+/* Header */
+.header{
+  padding:10px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border-bottom:1px solid var(--border);
+}
+.menu-btn{
+  background:var(--highlight);
+  border:none;border-radius:8px;
+  padding:6px 10px;
+  cursor:pointer
+}
+.header-title{
+  flex:1;text-align:center;
+  color:var(--highlight);font-size:22px
+}
+
+/* Progress */
+#progressBar{
+  height:4px;background:var(--highlight);
+  width:0%;
+}
+
+/* Reader */
 .reader{
-  flex:1;
-  overflow:auto;
-  padding:15px;
-  text-align:center;
+  flex:1;overflow:auto;
+  padding:14px;text-align:center
 }
 .ayah{
-  font-size:22px;
-  line-height:2;
-  margin-bottom:20px;
+  font-size:20px;line-height:1.9;
+  margin-bottom:18px;
+}
+.ayah.active{
+  background:rgba(255,204,0,.15);
+  border-radius:12px;
+  padding:6px;
 }
 
-/* ===== Footer ===== */
+/* Footer */
 .footer{
-  display:flex;
-  justify-content:space-between;
+  display:flex;justify-content:space-between;
   padding:8px 12px;
   border-top:1px solid var(--border);
-  font-size:14px;
+  font-size:14px
+}
+
+/* Top button */
+#topBtn{
+  position:fixed;bottom:20px;left:20px;
+  display:none;z-index:999;
+  background:var(--highlight);
+  border:none;border-radius:50%;
+  padding:10px 12px;
+  cursor:pointer
+}
+
+/* Reading mode */
+.reading-mode .header,
+.reading-mode .footer{display:none}
+.reading-mode .reader{padding:20px 12px}
+
+/* ===================== Mobile ===================== */
+@media(max-width:768px){
+  .sidebar{
+    position:fixed;top:0;right:-100%;
+    height:100vh;width:85%;
+    z-index:1000;transition:.3s
+  }
+  .sidebar.open{right:0}
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <h3>🔍 البحث</h3>
+    <input id="search" placeholder="اسم السورة"/>
+    <button onclick="showHome()">🏠 الرئيسية</button>
+    <div id="surahList"></div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <div class="header">
+      <button class="menu-btn" onclick="toggleMenu()">☰</button>
+      <button class="menu-btn" onclick="toggleReading()">📖</button>
+      <button class="menu-btn" onclick="toggleEye()">👁</button>
+      <div class="header-title" id="title">القرآن الكريم</div>
+    </div>
+
+    <div id="progressBar"></div>
+
+    <div class="reader" id="reader"></div>
+
+    <div class="footer">
+      <div>الجزء: <span id="juz">-</span></div>
+      <div>© زياد أيمن المغربي</div>
+      <div>الحزب: <span id="hizb">-</span></div>
+    </div>
+  </div>
+</div>
+
+<button id="topBtn" onclick="goTop()">⬆</button>
+
+<script>
+/* ===================== Helpers ===================== */
+const sidebar = document.getElementById('sidebar');
+const reader = document.getElementById('reader');
+const surahList = document.getElementById('surahList');
+const title = document.getElementById('title');
+const search = document.getElementById('search');
+const progressBar = document.getElementById('progressBar');
+const topBtn = document.getElementById('topBtn');
+
+function toggleMenu(){ sidebar.classList.toggle('open'); }
+function toggleReading(){ document.body.classList.toggle('reading-mode'); }
+function toggleEye(){ document.body.classList.toggle('eye-mode'); }
+function goTop(){ reader.scrollTo({top:0,behavior:'smooth'}); }
+
+/* ===================== Load Surahs ===================== */
+fetch('https://api.quran.com/api/v4/chapters?language=ar')
+.then(r=>r.json())
+.then(d=>{
+  d.chapters.forEach(s=>{
+    const div=document.createElement('div');
+    div.className='surah-item';
+    div.textContent=s.name_arabic;
+    div.onclick=()=>loadSurah(s.id,s.name_arabic);
+    surahList.appendChild(div);
+  });
+});
+
+search.oninput=()=>{
+  [...surahList.children].forEach(x=>{
+    x.style.display = x.textContent.includes(search.value)?'block':'none';
+  });
+};
+
+/* ===================== Load Surah ===================== */
+function loadSurah(id,name){
+  title.textContent=name;
+  sidebar.classList.remove('open');
+  reader.innerHTML='جاري التحميل...';
+
+  fetch(`https://api.quran.com/api/v4/verses/by_chapter/${id}?fields=text_uthmani,verse_number,juz_number,hizb_number&per_page=300`)
+  .then(r=>r.json())
+  .then(d=>{
+    reader.innerHTML='';
+    d.verses.forEach(v=>{
+      const a=document.createElement('div');
+      a.className='ayah';
+      a.dataset.juz=v.juz_number;
+      a.dataset.hizb=v.hizb_number;
+      a.innerHTML=`(${v.verse_number}) ${v.text_uthmani}`;
+      reader.appendChild(a);
+    });
+  });
+}
+
+/* ===================== Scroll UX ===================== */
+reader.addEventListener('scroll',()=>{
+  const ayahs=[...reader.children];
+  let active=null;
+  ayahs.forEach(a=>a.classList.remove('active'));
+  for(const a of ayahs){
+    if(a.getBoundingClientRect().top>=80){
+      active=a;break;
+    }
+  }
+  if(active){
+    active.classList.add('active');
+    juz.textContent=active.dataset.juz;
+    hizb.textContent=active.dataset.hizb;
+  }
+  // progress
+  const p = reader.scrollTop/(reader.scrollHeight-reader.clientHeight)*100;
+  progressBar.style.width=p+'%';
+
+  topBtn.style.display = reader.scrollTop>300?'block':'none';
+});
+
+/* ===================== Home ===================== */
+function showHome(){
+  title.textContent='القرآن الكريم';
+  reader.innerHTML='';
+  juz.textContent='-'; hizb.textContent='-';
+}
+</script>
+</body>
+</html>  font-size:14px;
 }
 
 /* ===== Mobile ===== */
@@ -367,4 +542,5 @@ loadSurahs();
 </script>
 </body>
 </html>
+
 
