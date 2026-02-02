@@ -1,0 +1,263 @@
+ <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>القرآن الكريم</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#d4af37;
+  --bg:#1e1e1e;
+  --panel:#2b2b2b;
+  --border:#444;
+  --text:#f0f0f0;
+  --highlight:#ffcc00;
+  --counter-bg:#2e2e2e;
+  --counter-glow:#ffcc00;
+}
+body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);margin:0;padding:0;}
+.app{display:flex;height:100vh;flex-direction:row;}
+.sidebar{width:280px;background:var(--panel);border-left:1px solid var(--border);padding:20px;overflow-y:auto;scrollbar-width:thin;scrollbar-color: var(--highlight) var(--panel);}
+.sidebar::-webkit-scrollbar { width:8px; }
+.sidebar::-webkit-scrollbar-track { background:var(--panel); border-radius:10px; }
+.sidebar::-webkit-scrollbar-thumb { background: linear-gradient(180deg,var(--highlight),#d4af37); border-radius:10px; }
+.sidebar::-webkit-scrollbar-thumb:hover { background:#ffdd33; }
+
+.sidebar h3{color:var(--gold);margin-bottom:10px;font-size:18px;font-weight:bold;text-align:right;}
+.sidebar button{width:100%;padding:10px;margin-bottom:10px;border:none;border-radius:12px;background:var(--highlight);cursor:pointer;font-size:16px;color:#111;font-weight:bold;transition: background 0.3s;}
+.sidebar button:hover{background:#d4af37;color:#fff;}
+.sidebar input{width:100%;padding:10px;border-radius:10px;border:1px solid var(--border);margin-bottom:15px;font-family:inherit;background:#333;color:#fff;}
+.surah-item{padding:10px;border-bottom:1px solid var(--border);cursor:pointer;transition: background 0.3s;border-radius:8px;text-align:right;}
+.surah-item:hover{background:#444;}
+.content{flex:1;display:flex;flex-direction:column;position:relative;}
+.header{padding:20px;text-align:center;font-size:32px;color:var(--highlight);font-weight:bold;border-bottom:1px solid var(--border);text-shadow: 1px 1px 3px #000;display:flex;justify-content:space-between;align-items:center;}
+.header-title{flex:1;text-align:center;}
+.font-controls{display:flex;gap:10px;}
+.font-controls button{padding:6px 10px;border-radius:50px;border:none;background:var(--highlight);color:#111;font-weight:bold;cursor:pointer;transition:0.3s;}
+.font-controls button:hover{background:#d4af37;color:#fff;}
+.theme-button{padding:6px 10px;border-radius:50px;border:none;background:var(--highlight);color:#111;font-weight:bold;cursor:pointer;transition:0.3s;}
+.theme-button:hover{background:#d4af37;color:#fff;}
+
+.bismillah{font-size:32px;text-align:center;margin:15px 0;color:var(--highlight);font-weight:bold;transition: all 0.5s ease;}
+.dua{font-size:28px;color:#fff;font-weight:bold;text-align:center;margin:20px 0;}
+.circular-counters{display:flex;justify-content:center;gap:80px;margin-bottom:60px;margin-top:20px;flex-wrap:wrap;}
+.circle-counter{position:relative;width:180px;height:180px;border-radius:50%;display:flex;flex-direction:column;justify-content:center;align-items:center;margin:20px;background: var(--counter-bg);box-shadow: 8px 8px 15px #141414, -8px -8px 15px #3a3a3a;transition: transform 0.3s ease;}
+.circle-counter:hover{transform: scale(1.05);}
+.circle-number{font-size:48px;font-weight:bold;color: var(--counter-glow);z-index:2;}
+.circle-button{margin-top:12px;padding:8px 14px;border:none;border-radius:50px;background:var(--counter-glow);color:#111;font-weight:bold;cursor:pointer;transition:all 0.3s, box-shadow 0.3s;z-index:2;}
+.circle-button:hover{background:#d4af37;color:#fff;box-shadow:0 0 20px var(--counter-glow);transform: scale(1.05);}
+.glow-ring{position:absolute;top:-5px; left:-5px;width:190px; height:190px;border-radius:50%;border:3px solid var(--counter-glow);box-shadow:0 0 15px var(--counter-glow), 0 0 30px rgba(255,204,0,0.5);animation: pulse 2s infinite;z-index:1;}
+@keyframes pulse{0%{transform: scale(1); opacity:0.7;}50%{transform: scale(1.1); opacity:0.9;}100%{transform: scale(1); opacity:0.7;}}
+.reader{flex:1;overflow-y:auto;padding:20px 15px;scroll-behavior: smooth;text-align:center;display:flex;flex-direction:column;align-items:center;}
+.ayah{font-size:28px;line-height:2.5;margin-bottom:30px;background: rgba(255,204,0,0.05);padding:10px 15px;border-radius:12px;display:inline-block;max-width:90%;word-break: break-word;text-align:center;opacity:0;transform: translateY(20px);transition: all 0.5s ease;}
+.ayah.show{opacity:1;transform: translateY(0);}
+.ayah-number{font-size:18px;color:var(--highlight);margin-left:8px;vertical-align: middle;}
+.star{cursor:pointer;color:var(--highlight);font-size:18px;margin-right:6px;}
+.la-ilah{position:absolute;top:50%;left:50%;transform: translate(-50%,-50%);font-size:48px;color:var(--highlight);font-weight:bold;opacity:0;transition: all 1s ease;text-align:center;text-shadow: 2px 2px 6px #000;z-index:999;}
+.footer{display:flex;justify-content:space-between;align-items:center;padding:10px 15px;border-top:1px solid var(--border);font-size:16px;color:var(--gold);}
+.footer .juz-hizb{font-weight:bold;color:var(--highlight);}
+.reader::-webkit-scrollbar{width:6px;}
+.reader::-webkit-scrollbar-thumb{background:var(--highlight);border-radius:10px;}
+
+@media(max-width:768px){
+  .app{flex-direction:column;}
+  .sidebar{width:100%;height:auto;border-left:none;border-bottom:1px solid var(--border);}
+  .circular-counters{gap:20px;}
+  .circle-counter{width:140px;height:140px;}
+  .circle-number{font-size:36px;}
+  .circle-button{padding:6px 12px;font-size:14px;}
+  .glow-ring{width:150px;height:150px;top:-5px;left:-5px;}
+  .la-ilah{font-size:32px;}
+  .header{flex-direction:column;gap:10px;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="sidebar">
+    <h3>🔍 البحث عن السورة</h3>
+    <input id="search" placeholder="اكتب اسم السورة">
+    <h3>📌 القوائم</h3>
+    <button onclick="showHome()">🏠 الرئيسية</button>
+    <h3>📖 السور</h3>
+    <div id="surahList"></div>
+  </div>
+
+  <div class="content">
+    <div class="header">
+      <div class="header-title" id="title">مرحبًا بك في القرآن الكريم 🤍</div>
+      <div style="display:flex;gap:10px;">
+        <div class="font-controls">
+          <button onclick="changeFontSize(2)">A+</button>
+          <button onclick="changeFontSize(-2)">A-</button>
+        </div>
+        <button class="theme-button" id="themeToggleBtn">☀</button>
+      </div>
+    </div>
+
+    <div class="bismillah" id="bismillah">بسم الله الرحمن الرحيم</div>
+    <div class="dua" id="dua">اللهم اجعل قراءتنا نورًا لهداية قلوبنا 🌙</div>
+
+    <div class="circular-counters" id="circularCounters">
+      <div class="circle-counter">
+        <div class="circle-number" id="tasbeeh">0</div>
+        <div class="glow-ring"></div>
+        <button class="circle-button" onclick="increment('tasbeeh')">سبحان الله</button>
+      </div>
+      <div class="circle-counter">
+        <div class="circle-number" id="istighfar">0</div>
+        <div class="glow-ring"></div>
+        <button class="circle-button" onclick="increment('istighfar')">الحمد لله</button>
+      </div>
+      <div class="circle-counter">
+        <div class="circle-number" id="hawqala">0</div>
+        <div class="glow-ring"></div>
+        <button class="circle-button" onclick="increment('hawqala')">الله أكبر</button>
+      </div>
+    </div>
+
+    <div class="la-ilah" id="laIlah">لا إله إلا الله وحده لا شريك له</div>
+    <div class="reader" id="reader"></div>
+<div class="footer">
+  <div class="juz-hizb" style="text-align:right;">الجزء: <span id="juz">-</span></div>
+  <div style="text-align:center;">زياد أيمن المغربي © 2026</div>
+  <div class="juz-hizb" style="text-align:left;">الحزب: <span id="hizb">-</span></div>
+</div>
+
+  </div>
+</div>
+
+<script>
+let counts = { tasbeeh:0, istighfar:0, hawqala:0 };
+const maxCount = 33;
+
+function increment(type){
+  if(counts[type]<maxCount){
+    counts[type]++;
+    document.getElementById(type).textContent = counts[type];
+  }
+  if(counts.tasbeeh===maxCount && counts.istighfar===maxCount && counts.hawqala===maxCount){
+    document.getElementById('circularCounters').style.display = 'none';
+    const laIlahDiv = document.getElementById('laIlah');
+    laIlahDiv.style.opacity = 1;
+    setTimeout(()=>{
+      laIlahDiv.style.opacity = 0;
+      counts = {tasbeeh:0, istighfar:0, hawqala:0};
+      ['tasbeeh','istighfar','hawqala'].forEach(t=>document.getElementById(t).textContent=0);
+      document.getElementById('circularCounters').style.display='flex';
+    },3000);
+  }
+}
+
+const reader = document.getElementById("reader");
+const title = document.getElementById("title");
+const surahList = document.getElementById("surahList");
+const search = document.getElementById("search");
+const bismillahDiv = document.getElementById("bismillah");
+const duaDiv = document.getElementById("dua");
+const juzHizbDiv = document.getElementById("juzHizb");
+let fontSize = 28;
+
+function changeFontSize(diff){
+  fontSize += diff;
+  document.querySelectorAll('.ayah').forEach(a=>a.style.fontSize = fontSize+'px');
+}
+
+async function loadSurahs(){
+  const res = await fetch("https://api.quran.com/api/v4/chapters?language=ar");
+  const data = await res.json();
+  const surahs = data.chapters;
+  surahList.innerHTML = "";
+  surahs.forEach(s=>{
+    const div=document.createElement("div");
+    div.className="surah-item";
+    div.textContent = s.name_arabic;
+    div.onclick=()=>loadSurah(s.id,s.name_arabic);
+    surahList.appendChild(div);
+  });
+}
+
+search.oninput = () => {
+  const value = search.value.trim();
+  [...surahList.children].forEach(div=>{
+    div.style.display = div.textContent.includes(value)?'block':'none';
+  });
+};
+
+async function loadSurah(id,name){
+  title.textContent = name;
+  bismillahDiv.style.display = "none";
+  duaDiv.style.display = "none";
+  document.getElementById('circularCounters').style.display = "none";
+  reader.innerHTML = "تحميل الآيات...";
+  const res = await fetch(`https://api.quran.com/api/v4/verses/by_chapter/${id}?language=ar&fields=text_uthmani,verse_number,juz_number,hizb_number&per_page=300`);
+  const data = await res.json();
+  reader.innerHTML = "";
+  data.verses.forEach((v,i)=>{
+    const div=document.createElement("div");
+    div.className="ayah";
+    div.dataset.juz=v.juz_number;
+    div.dataset.hizb=v.hizb_number;
+    div.innerHTML=`<span class="ayah-number">(${v.verse_number})</span> ${v.text_uthmani}`;
+    reader.appendChild(div);
+    setTimeout(()=>div.classList.add("show"), i*20);
+  });
+  reader.scroll({top:0,behavior:"smooth"});
+}
+
+function showHome(){
+  title.textContent = "مرحبًا بك في القرآن الكريم 🤍";
+  bismillahDiv.style.display = "block";
+  duaDiv.style.display = "block";
+  document.getElementById('circularCounters').style.display = "flex";
+  reader.innerHTML = "";
+  juzHizbDiv.textContent = "الجزء: - | الحزب: -";
+}
+
+reader.addEventListener('scroll', ()=>{
+  const ayahs = [...reader.children];
+  let currentAyah = ayahs.find(a=>a.getBoundingClientRect().top >= 60);
+  if(currentAyah){
+    document.getElementById('juz').textContent = currentAyah.dataset.juz;
+    document.getElementById('hizb').textContent = currentAyah.dataset.hizb;
+  }
+});
+
+
+// Light/Dark mode
+const root = document.documentElement;
+let lightMode = false;
+document.getElementById('themeToggleBtn').addEventListener('click', ()=>{
+  lightMode = !lightMode;
+  if(lightMode){
+    // الوضع الفاتح: بيج غامق + بني غامق
+    root.style.setProperty('--bg','#e6d8c3');      
+    root.style.setProperty('--panel','#8d6e63');   
+    root.style.setProperty('--border','#5d4037');  
+    root.style.setProperty('--text','#000');      // الخط أسود في الوضع الفاتح
+    root.style.setProperty('--highlight','#bcaaa4'); 
+    root.style.setProperty('--counter-bg','#8d6e63'); 
+    root.style.setProperty('--counter-glow','#bcaaa4'); 
+
+    document.querySelectorAll('.ayah').forEach(a => a.style.color = '#000'); // تطبيق على الآيات
+    document.getElementById('themeToggleBtn').textContent='🌙';
+}else{
+    root.style.setProperty('--bg','#1e1e1e');
+    root.style.setProperty('--panel','#2b2b2b');
+    root.style.setProperty('--border','#444');
+    root.style.setProperty('--text','#f0f0f0');
+    root.style.setProperty('--highlight','#ffcc00');
+    root.style.setProperty('--counter-bg','#2e2e2e');
+    root.style.setProperty('--counter-glow','#ffcc00');
+
+    document.querySelectorAll('.ayah').forEach(a => a.style.color = '#f0f0f0'); // إعادة اللون الأصلي
+    document.getElementById('themeToggleBtn').textContent='☀';
+}
+
+});
+
+loadSurahs();
+</script>
+</body>
+</html>
