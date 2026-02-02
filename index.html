@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -7,187 +7,95 @@
 <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#1e1e1e;
-  --panel:#2b2b2b;
-  --border:#444;
-  --text:#f0f0f0;
-  --accent:#ffcc00;
+  --bg:#1e1e1e; --panel:#2b2b2b; --border:#444; --text:#f0f0f0; --accent:#ffcc00;
 }
 .light{
-  --bg:#f5f0e8;
-  --panel:#e0d7cc;
-  --border:#b6a99a;
-  --text:#000;
-  --accent:#6d4c41;
+  --bg:#f5f0e8; --panel:#e0d7cc; --border:#b6a99a; --text:#000; --accent:#6d4c41;
 }
-*{box-sizing:border-box}
+*{box-sizing:border-box;}
 body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
-.app{display:flex;height:100vh;overflow:hidden;position:relative}
+.app{display:flex;height:100vh;overflow:hidden;position:relative;}
 
 /* Sidebar */
 .sidebar{
-  width:260px;
-  background:var(--panel);
-  border-left:1px solid var(--border);
-  padding:12px;
-  overflow:auto;
-  position:fixed;
-  top:0;
-  right:0;
-  height:100vh;
-  transform:translateX(100%);
-  transition:transform .3s ease;
-  z-index:1000;
+  width:260px; background:var(--panel); border-left:1px solid var(--border); padding:12px; overflow:auto; position:fixed; top:0; right:0; height:100vh; transform:translateX(100%); transition:transform .3s ease; z-index:1000;
 }
 .sidebar.open{transform:translateX(0);}
 .sidebar h3{color:var(--accent);}
-.sidebar button{
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  background:var(--accent);
-  margin-bottom:10px;
-  cursor:pointer;
-}
-.surah-item{
-  padding:10px;
-  border-bottom:1px solid var(--border);
-  cursor:pointer;
-}
-.surah-item:hover{background:rgba(255,255,255,.08)}
+.sidebar button{width:100%;padding:10px;border:none;border-radius:8px;background:var(--accent);margin-bottom:10px;cursor:pointer;}
+.surah-item{padding:10px;border-bottom:1px solid var(--border);cursor:pointer;}
+.surah-item:hover{background:rgba(255,255,255,.08);}
 
 /* Overlay */
-.overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.3);
-  display:none;
-  z-index:900;
-}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);display:none;z-index:900;}
 .overlay.show{display:block;}
 
 /* Content */
-.content{flex:1;display:flex;flex-direction:column;position:relative}
+.content{flex:1;display:flex;flex-direction:column;position:relative;}
 
 /* Header */
-.header{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:10px;
-  border-bottom:1px solid var(--border);
-  position:relative;
-  background:var(--bg);
-  z-index:1050;
-}
-.menu-btn{
-  background:var(--accent);
-  border:none;
-  border-radius:8px;
-  padding:6px 10px;
-  cursor:pointer;
-  position:relative;
-  z-index:1100; /* دايمًا فوق */
-}
-.header-title{
-  flex:1;
-  text-align:center;
-  font-size:22px;
-  color:var(--accent);
-}
+.header{display:flex;align-items:center;gap:8px;padding:10px;border-bottom:1px solid var(--border);background:var(--bg);z-index:1050;}
+.menu-btn{background:var(--accent);border:none;border-radius:8px;padding:6px 10px;cursor:pointer;position:relative;z-index:1100;}
+.header-title{flex:1;text-align:center;font-size:22px;color:var(--accent);}
 
-/* Sticky Scroll Bar */
-#scrollBar{
-  position:sticky;
-  top:0;
-  background:var(--panel);
-  padding:5px 10px;
-  font-weight:bold;
-  color:var(--accent);
-  border-bottom:1px solid var(--border);
-  z-index:1040;
-  text-align:center;
-}
+/* Scroll Bar */
+#scrollBar{position:sticky;top:0;background:var(--panel);padding:5px 10px;font-weight:bold;color:var(--accent);border-bottom:1px solid var(--border);z-index:1040;text-align:center;}
 
 /* Home - Tasbeeh */
-.home{
-  flex:1;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
-.tasbeeh{
-  display:flex;
-  gap:60px;
-}
+.home{flex:1;display:flex;justify-content:center;align-items:center;}
+.tasbeeh{display:flex;gap:60px;}
+
+/* Circle Boxes with SVG and Halo */
 .circle-box{
   position:relative;
-  width:220px;
-  text-align:center;
-}
-.circle-box::after{
-  content:"";
-  position:absolute;
-  inset:-25px;
-  border-radius:50%;
-  background:conic-gradient(var(--accent),transparent 40%,var(--accent));
-  filter:blur(30px);
-  opacity:.7;
-  animation:spin 6s linear infinite;
-  z-index:-1;
-}
-@keyframes spin{
-  from{transform:rotate(0)}
-  to{transform:rotate(360deg)}
-}
-.circle-number{
-  font-size:52px;
-  color:var(--accent);
-  margin:20px 0;
-}
-.circle-box button{
-  width:100%;
-  padding:16px;
-  font-size:22px;
-  border:none;
-  border-radius:14px;
-  background:var(--accent);
+  width:220px; height:220px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
   cursor:pointer;
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius:50%;
+  box-shadow:0 0 20px rgba(0,0,0,0.3);
 }
+.circle-box:hover{transform: scale(1.08); box-shadow:0 0 40px var(--accent),0 0 80px rgba(255,204,0,0.4);}
+.circle-box::before{
+  content:"";
+  position:absolute; inset:-15px;
+  border-radius:50%;
+  background: conic-gradient(var(--accent),transparent 70%);
+  filter: blur(25px);
+  opacity:0.5;
+  z-index:-1;
+  animation:spin 5s linear infinite;
+}
+@keyframes spin{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
+
+.circle-number{
+  font-size:56px; color:var(--accent); font-weight:bold; margin-bottom:10px; z-index:2;
+  text-shadow: 0 0 8px rgba(255,204,0,0.6);
+}
+.circle-text{
+  font-size:22px; color:var(--text); font-weight:bold; text-align:center; margin-top:auto; z-index:2;
+}
+.circle-box button{font-size:18px;padding:10px 14px;border:none;border-radius:12px;background:var(--accent);cursor:pointer; z-index:2;margin-top:8px;}
+
+.circle-svg{
+  position:absolute; top:0; left:0; transform:rotate(-90deg);
+}
+.circle-svg circle{transition: stroke-dashoffset 0.5s cubic-bezier(.68,-0.55,.27,1.55);}
 
 /* Reader */
-.reader{
-  flex:1;
-  overflow:auto;
-  padding:20px;
-  text-align:center;
-  display:none;
-}
-.ayah{
-  font-size:28px;
-  line-height:2;
-  margin-bottom:18px;
-}
+.reader{flex:1;overflow:auto;padding:20px;text-align:center;display:none;}
+.ayah{font-size:28px;line-height:2;margin-bottom:18px;transition:background .3s,transform .3s;}
+.ayah.active{background: rgba(255,204,0,0.2); border-radius:8px; padding:2px 8px; transform:scale(1.02);}
 
 /* Footer */
-.footer{
-  display:flex;
-  justify-content:space-between;
-  padding:10px;
-  border-top:1px solid var(--border);
-  font-size:16px;
-}
+.footer{display:flex;justify-content:space-between;padding:10px;border-top:1px solid var(--border);font-size:16px;}
 .footer span{font-weight:bold;color:var(--accent);}
-@media(max-width:768px){
-  .tasbeeh{flex-direction:column;gap:40px}
-}
+@media(max-width:768px){.tasbeeh{flex-direction:column;gap:40px}.sidebar{width:100%;}}
 </style>
 </head>
 <body>
 <div class="app">
 
-<!-- Sidebar -->
 <div class="sidebar" id="sidebar">
   <h3>📖 السور</h3>
   <button onclick="showHome()">🏠 الرئيسية</button>
@@ -195,7 +103,6 @@ body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
 </div>
 <div class="overlay" id="overlay" onclick="closeMenu()"></div>
 
-<!-- Content -->
 <div class="content">
   <div class="header">
     <button class="menu-btn" onclick="toggleMenu()">☰ السور</button>
@@ -203,31 +110,48 @@ body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
     <div class="header-title" id="title">القرآن الكريم</div>
   </div>
 
-  <!-- Sticky Scroll Bar -->
   <div id="scrollBar">الجزء: <span id="juz-bar">-</span> | الحزب: <span id="hizb-bar">-</span></div>
 
-  <!-- Home -->
   <div class="home" id="home">
     <div class="tasbeeh">
-      <div class="circle-box">
+      <!-- Circle 1 -->
+      <div class="circle-box" id="c1-circle">
+        <svg class="circle-svg" width="220" height="220">
+          <circle cx="110" cy="110" r="100" stroke="var(--panel)" stroke-width="10" fill="none"/>
+          <circle cx="110" cy="110" r="100" stroke="var(--accent)" stroke-width="10" fill="none"
+                  stroke-dasharray="628.32" stroke-dashoffset="628.32" id="c1-progress"/>
+        </svg>
         <div class="circle-number" id="c1">0</div>
-        <button onclick="inc('c1')">سبحان الله</button>
+        <div class="circle-text">سبحان الله</div>
+        <button onclick="inc('c1')"> اذكر</button>
       </div>
-      <div class="circle-box">
+      <!-- Circle 2 -->
+      <div class="circle-box" id="c2-circle">
+        <svg class="circle-svg" width="220" height="220">
+          <circle cx="110" cy="110" r="100" stroke="var(--panel)" stroke-width="10" fill="none"/>
+          <circle cx="110" cy="110" r="100" stroke="var(--accent)" stroke-width="10" fill="none"
+                  stroke-dasharray="628.32" stroke-dashoffset="628.32" id="c2-progress"/>
+        </svg>
         <div class="circle-number" id="c2">0</div>
-        <button onclick="inc('c2')">الحمد لله</button>
+        <div class="circle-text">الحمد لله</div>
+        <button onclick="inc('c2')">اذكر</button>
       </div>
-      <div class="circle-box">
+      <!-- Circle 3 -->
+      <div class="circle-box" id="c3-circle">
+        <svg class="circle-svg" width="220" height="220">
+          <circle cx="110" cy="110" r="100" stroke="var(--panel)" stroke-width="10" fill="none"/>
+          <circle cx="110" cy="110" r="100" stroke="var(--accent)" stroke-width="10" fill="none"
+                  stroke-dasharray="628.32" stroke-dashoffset="628.32" id="c3-progress"/>
+        </svg>
         <div class="circle-number" id="c3">0</div>
-        <button onclick="inc('c3')">الله أكبر</button>
+        <div class="circle-text">الله أكبر</div>
+        <button onclick="inc('c3')">اذكر</button>
       </div>
     </div>
   </div>
 
-  <!-- Reader -->
   <div class="reader" id="reader"></div>
 
-  <!-- Footer -->
   <div class="footer">
     <div>الحزب: <span id="hizb">-</span></div>
     <div>© زياد أيمن المغربي</div>
@@ -237,51 +161,67 @@ body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
 </div>
 
 <script>
-/* ===== Tasbeeh ===== */
+const storage={get(k,d){return JSON.parse(localStorage.getItem(k)||JSON.stringify(d));},set(k,v){localStorage.setItem(k,JSON.stringify(v));}};
+
+/* ===== Tasbeeh Circular with Bounce ===== */
 const max=33;
 function inc(id){
   const el=document.getElementById(id);
-  let v=+el.textContent;
-  if(v<max) el.textContent=v+1;
+  let v=+el.textContent + 1;
+  el.textContent = v;
+  storage.set('tasbeeh',{...storage.get('tasbeeh',{c1:0,c2:0,c3:0}),[id]:v});
+  updateCircle(id,v);
 }
 
+function updateCircle(id,value){
+  const circle=document.getElementById(id+'-progress');
+  const circumference = 2 * Math.PI * 100; // r=100
+  const offset = circumference - (value%max)/max * circumference;
+  circle.style.strokeDashoffset = offset;
+
+  // تأثير ارتداد صغير
+  const box=document.getElementById(id+'-circle');
+  box.style.transform='scale(1.12)';
+  setTimeout(()=>{box.style.transform='scale(1)';},200);
+}
+
+function loadTasbeeh(){
+  const counts=storage.get('tasbeeh',{c1:0,c2:0,c3:0});
+  ['c1','c2','c3'].forEach(id=>{
+    document.getElementById(id).textContent=counts[id];
+    updateCircle(id,counts[id]);
+  });
+}
+loadTasbeeh();
+
 /* ===== Menu & Theme ===== */
-const sidebar=document.getElementById("sidebar");
-const overlay=document.getElementById("overlay");
-function toggleMenu(){
-  sidebar.classList.toggle("open");
-  overlay.classList.toggle("show");
-}
-function closeMenu(){
-  sidebar.classList.remove("open");
-  overlay.classList.remove("show");
-}
-function toggleTheme(){ document.body.classList.toggle("light"); }
+const sidebar=document.getElementById("sidebar"), overlay=document.getElementById("overlay");
+function toggleMenu(){sidebar.classList.toggle("open"); overlay.classList.toggle("show");}
+function closeMenu(){sidebar.classList.remove("open"); overlay.classList.remove("show");}
+function toggleTheme(){document.body.classList.toggle("light"); storage.set('theme',document.body.classList.contains('light'));}
+if(storage.get('theme',false)) document.body.classList.add('light');
 
 /* ===== Load Surahs ===== */
 const surahList=document.getElementById("surahList");
 fetch("https://api.quran.com/api/v4/chapters?language=ar")
 .then(r=>r.json())
-.then(d=>{
-  d.chapters.forEach(s=>{
-    const div=document.createElement("div");
-    div.className="surah-item";
-    div.textContent=s.id+" - "+s.name_arabic;
-    div.onclick=()=>loadSurah(s.id,s.name_arabic);
-    surahList.appendChild(div);
-  });
-});
+.then(d=>{d.chapters.forEach(s=>{
+  const div=document.createElement("div"); div.className="surah-item"; div.textContent=s.id+" - "+s.name_arabic;
+  div.onclick=()=>loadSurah(s.id,s.name_arabic); surahList.appendChild(div);
+});});
 
-/* ===== Load Ayat ===== */
+/* ===== Load Ayat Full ===== */
+let currentSurah=null;
 function loadSurah(id,name){
+  currentSurah={id,name};
   document.getElementById("title").textContent=name;
   document.getElementById("home").style.display="none";
   closeMenu();
   const reader=document.getElementById("reader");
-  reader.style.display="block";
+  reader.style.display="block"; 
   reader.innerHTML="جاري تحميل الآيات...";
-
-  fetch(`https://api.quran.com/api/v4/verses/by_chapter/${id}?fields=text_uthmani,juz_number,hizb_number,verse_number&per_page=300`)
+  
+  fetch(`https://api.quran.com/api/v4/verses/by_chapter/${id}?fields=text_uthmani,juz_number,hizb_number,verse_number&per_page=350`)
   .then(r=>r.json())
   .then(d=>{
     reader.innerHTML="";
@@ -290,29 +230,35 @@ function loadSurah(id,name){
       a.className="ayah";
       a.dataset.juz=v.juz_number;
       a.dataset.hizb=v.hizb_number;
+      a.dataset.verse=v.verse_number;
       a.innerHTML=`(${v.verse_number}) ${v.text_uthmani}`;
       reader.appendChild(a);
     });
 
-    // تحديث الجزء والحزب أثناء التمرير بدقة
-    reader.addEventListener('scroll',()=>{
-      const ayahs=[...reader.children];
-      let active = ayahs.reduce((closest, ayah)=>{
-        const rect = ayah.getBoundingClientRect();
-        const offset = Math.abs(rect.top - 100);
-        return offset < closest.offset ? {ayah, offset} : closest;
-      },{ayah:null, offset:Infinity}).ayah;
-
-      if(active){
-        document.getElementById('juz').textContent = active.dataset.juz;
-        document.getElementById('hizb').textContent = active.dataset.hizb;
-        document.getElementById('juz-bar').textContent = active.dataset.juz;
-        document.getElementById('hizb-bar').textContent = active.dataset.hizb;
-      }
-    });
-    reader.scroll({top:0,behavior:"smooth"});
+    const lastVerse=storage.get('lastVerse',null);
+    if(lastVerse && lastVerse.surah==id){
+      const ayah=[...reader.children].find(a=>+a.dataset.verse===lastVerse.verse);
+      if(ayah) ayah.scrollIntoView({behavior:"auto"});
+    } else reader.scroll({top:0});
   });
 }
+
+/* ===== Scroll Highlight ديناميكي ===== */
+const reader=document.getElementById("reader");
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
+      [...reader.children].forEach(a=>a.classList.remove('active'));
+      e.target.classList.add('active');
+      document.getElementById('juz').textContent=e.target.dataset.juz;
+      document.getElementById('hizb').textContent=e.target.dataset.hizb;
+      document.getElementById('juz-bar').textContent=e.target.dataset.juz;
+      document.getElementById('hizb-bar').textContent=e.target.dataset.hizb;
+      storage.set('lastVerse',{surah:currentSurah.id,verse:+e.target.dataset.verse});
+    }
+  });
+},{root:reader, rootMargin:'-50% 0px -50% 0px', threshold:0});
+new MutationObserver(()=>{[...reader.children].forEach(a=>observer.observe(a));}).observe(reader,{childList:true});
 
 /* ===== Home ===== */
 function showHome(){
@@ -323,6 +269,7 @@ function showHome(){
   document.getElementById('hizb').textContent='-';
   document.getElementById('juz-bar').textContent='-';
   document.getElementById('hizb-bar').textContent='-';
+  storage.set('lastVerse',null);
 }
 </script>
 </body>
