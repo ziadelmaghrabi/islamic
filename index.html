@@ -23,7 +23,7 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
 .sidebar.open{transform:translateX(0);}
 .surah-item{padding:10px;border-bottom:1px solid var(--border);cursor:pointer;transition:.2s;}
 .surah-item:hover{background:var(--accent);color:#000;font-weight:bold;}
-#surahSearch{width:100%;padding:6px 8px;margin-bottom:10px;border-radius:6px;border:none;outline:none;
+#surahSearch{width:100%;padding:8px 10px;margin-bottom:10px;border-radius:6px;border:none;outline:none;
 background:#fff;color:#000;background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><circle cx="7" cy="7" r="6" stroke="black" stroke-width="2" fill="none"/><line x1="11" y1="11" x2="16" y2="16" stroke="black" stroke-width="2"/></svg>');
 background-repeat:no-repeat;background-position:98% center;background-size:16px;}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);display:none;z-index:900;}
@@ -40,12 +40,12 @@ padding:6px 10px;font-weight:bold;font-size:16px;border-bottom:1px solid var(--b
 /* Tasbeeh */
 .home{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;align-items:center;}
 .tasbeeh{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;width:100%;max-width:900px;}
-.circle-box{position:relative;width:100%;max-width:180px;aspect-ratio:1;border-radius:50%;
+.circle-box{position:relative;width:100%;max-width:200px;aspect-ratio:1;border-radius:50%;
 display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;user-select:none;
 -webkit-tap-highlight-color:transparent;transition:.2s;box-shadow:0 0 20px rgba(0,0,0,.3);}
 .circle-box:active{transform:scale(.96);box-shadow:0 0 30px var(--accent);}
-.circle-number{font-size:50px;color:var(--accent);font-weight:bold;}
-.circle-text{font-size:18px;text-align:center;padding:0 10px;}
+.circle-number{font-size:54px;color:var(--accent);font-weight:bold;line-height:1.1;}
+.circle-text{font-size:18px;text-align:center;padding:0 6px;word-wrap:break-word;}
 .circle-svg{position:absolute;inset:0;}
 .circle-svg circle{fill:none;stroke-width:8;}
 .circle-bg{stroke:var(--panel);}
@@ -53,7 +53,7 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;cur
 
 /* Reader */
 .reader{flex:1;overflow:auto;padding:20px;text-align:center;display:none;position:relative;}
-.ayah{display:inline-block;margin:0 4px;line-height:2.2;text-align:right;}
+.ayah{display:inline-block;margin:6px 4px;line-height:2.2;text-align:center;}
 .ayah-number{display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;
 border-radius:50%;background:var(--panel);color:var(--accent);font-size:14px;font-weight:bold;
 cursor:pointer;margin-left:2px;transition:.2s;position:relative;top:-3px;}
@@ -112,11 +112,12 @@ padding:12px;margin:10px;width:90%;max-width:300px;text-align:center;margin-top:
 </audio>
 
 <script>
+// نفس السكربت السابق مع تعديل حجم النص داخل الدوائر وتحديث الوسطية للآيات
 const storage={get:(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
 const max=33,radius=75,circ=2*Math.PI*radius;
 let ayahFontSize=22,currentAudio=null,lastTap=0;
 
-/* ===== Tasbeeh ===== */
+/* Tasbeeh */
 const tasbeehs=[
   {id:'c1',text:'سبحان الله'},
   {id:'c2',text:'الحمد لله'},
@@ -206,10 +207,8 @@ const allSurahs=[
   "القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر",
   "المسد","الإخلاص","الفلق","الناس"
 ];
-
 const surahList=document.getElementById("surahList");
 const surahSearch=document.getElementById("surahSearch");
-
 function renderSurahList(filter=""){
   surahList.innerHTML="";
   allSurahs.forEach((name,id)=>{
@@ -247,20 +246,12 @@ function loadSurah(id,name){
       const txt=document.createElement("span"); txt.textContent=v.text_uthmani; txt.style.fontSize=ayahFontSize+"px";
       const num=document.createElement("span"); num.className="ayah-number"; num.textContent=v.verse_number;
       num.style.fontSize=Math.round(ayahFontSize*0.7)+"px";
-      num.onclick=()=>{
-        if(currentAudio) currentAudio.pause();
-        currentAudio=new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${v.id}.mp3`);
-        currentAudio.play();
-        document.querySelectorAll(".ayah-number").forEach(n=>n.classList.remove("active"));
-        num.classList.add("active");
-      };
       a.append(txt,num); reader.appendChild(a);
+      a.style.textAlign='center';
     });
 
-    // الجزء والحزب يظهران مباشرة
     if(d.verses.length>0){ juzBar.textContent=d.verses[0].juz_number; hizbBar.textContent=d.verses[0].hizb_number; }
 
-    // Observer للتمرير
     const obs=new IntersectionObserver(entries=>{
       entries.forEach(e=>{
         if(e.isIntersecting){
