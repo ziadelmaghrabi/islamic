@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -68,6 +68,7 @@ body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
 }
 @keyframes spin{from{transform:rotate(0deg);} to{transform:rotate(360deg);}}
 
+/* Circle numbers */
 .circle-number{
   font-size:56px; color:var(--accent); font-weight:bold; margin-bottom:10px; z-index:2;
   text-shadow: 0 0 8px rgba(255,204,0,0.6);
@@ -84,8 +85,23 @@ body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
 
 /* Reader */
 .reader{flex:1;overflow:auto;padding:20px;text-align:center;display:none;}
-.ayah{font-size:28px;line-height:2;margin-bottom:18px;transition:background .3s,transform .3s;}
+.ayah{font-size:28px;line-height:2;margin-bottom:18px;transition:background .3s,transform .3s;position:relative; display:flex; align-items:center; gap:10px;}
 .ayah.active{background: rgba(255,204,0,0.2); border-radius:8px; padding:2px 8px; transform:scale(1.02);}
+
+/* Ayah number circle */
+.ayah-number{
+  display:inline-flex;
+  width:32px; height:32px;
+  justify-content:center; align-items:center;
+  border-radius:50%;
+  background:var(--panel);
+  color:var(--accent);
+  font-weight:bold;
+  cursor:pointer;
+  flex-shrink:0;
+  transition: background 0.3s, color 0.3s;
+}
+.ayah-number:hover{background:var(--accent); color:#000;}
 
 /* Footer */
 .footer{display:flex;justify-content:space-between;padding:10px;border-top:1px solid var(--border);font-size:16px;}
@@ -172,19 +188,15 @@ function inc(id){
   storage.set('tasbeeh',{...storage.get('tasbeeh',{c1:0,c2:0,c3:0}),[id]:v});
   updateCircle(id,v);
 }
-
 function updateCircle(id,value){
   const circle=document.getElementById(id+'-progress');
-  const circumference = 2 * Math.PI * 100; // r=100
+  const circumference = 2 * Math.PI * 100; 
   const offset = circumference - (value%max)/max * circumference;
   circle.style.strokeDashoffset = offset;
-
-  // تأثير ارتداد صغير
   const box=document.getElementById(id+'-circle');
   box.style.transform='scale(1.12)';
   setTimeout(()=>{box.style.transform='scale(1)';},200);
 }
-
 function loadTasbeeh(){
   const counts=storage.get('tasbeeh',{c1:0,c2:0,c3:0});
   ['c1','c2','c3'].forEach(id=>{
@@ -210,8 +222,9 @@ fetch("https://api.quran.com/api/v4/chapters?language=ar")
   div.onclick=()=>loadSurah(s.id,s.name_arabic); surahList.appendChild(div);
 });});
 
-/* ===== Load Ayat Full ===== */
+/* ===== Load Ayat Full with clickable numbers ===== */
 let currentSurah=null;
+let currentAudio=null; 
 function loadSurah(id,name){
   currentSurah={id,name};
   document.getElementById("title").textContent=name;
@@ -231,7 +244,25 @@ function loadSurah(id,name){
       a.dataset.juz=v.juz_number;
       a.dataset.hizb=v.hizb_number;
       a.dataset.verse=v.verse_number;
-      a.innerHTML=`(${v.verse_number}) ${v.text_uthmani}`;
+
+      // رقم الآية دائري clickable
+      const num=document.createElement("div");
+      num.className="ayah-number";
+      num.textContent=v.verse_number;
+      num.onclick=()=>{
+        if(currentAudio){
+          currentAudio.pause();
+          currentAudio.currentTime=0;
+        }
+        currentAudio=new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${v.id}.mp3`);
+        currentAudio.play();
+      };
+      a.appendChild(num);
+
+      const text=document.createElement("span");
+      text.textContent=v.text_uthmani;
+      a.appendChild(text);
+
       reader.appendChild(a);
     });
 
