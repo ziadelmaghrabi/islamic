@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -42,8 +42,20 @@ body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
 #scrollBar{position:sticky;top:0;background:var(--panel);padding:5px 10px;font-weight:bold;color:var(--accent);border-bottom:1px solid var(--border);z-index:1040;text-align:center;}
 
 /* Home - Tasbeeh */
-.home{flex:1;display:flex;justify-content:center;align-items:center;}
-.tasbeeh{display:flex;gap:60px;}
+.home{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column; /* يضع العداد في منتصف الصفحة رأسيًا */
+}
+
+.tasbeeh{
+  display:flex;
+  gap:60px;
+  justify-content:center;
+  flex-wrap:wrap; /* يسمح للدوائر بالانتقال لسطر جديد إذا ضاق العرض */
+}
 
 /* Circle Boxes with SVG and Halo */
 .circle-box{
@@ -78,30 +90,38 @@ body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
 }
 .circle-box button{font-size:18px;padding:10px 14px;border:none;border-radius:12px;background:var(--accent);cursor:pointer; z-index:2;margin-top:8px;}
 
-.circle-svg{
-  position:absolute; top:0; left:0; transform:rotate(-90deg);
+/* Reader - الآيات متوسطة */
+.reader {
+  flex:1;
+  overflow:auto;
+  padding:20px;
+  text-align:center; /* الآيات في منتصف الصفحة */
+  line-height:2;
 }
-.circle-svg circle{transition: stroke-dashoffset 0.5s cubic-bezier(.68,-0.55,.27,1.55);}
 
-/* Reader */
-.reader{flex:1;overflow:auto;padding:20px;text-align:center;display:none;}
-.ayah{font-size:28px;line-height:2;margin-bottom:18px;transition:background .3s,transform .3s;position:relative; display:flex; align-items:center; gap:10px;}
-.ayah.active{background: rgba(255,204,0,0.2); border-radius:8px; padding:2px 8px; transform:scale(1.02);}
+.ayah {
+  display:inline-block;  /* الآيات بجانب بعض */
+  margin:0 4px;
+}
 
-/* Ayah number circle */
-.ayah-number{
+.ayah.active {
+  background: rgba(255,204,0,0.2);
+  transform: scale(1.02);
+}
+
+.ayah-number {
   display:inline-flex;
-  width:32px; height:32px;
-  justify-content:center; align-items:center;
+  width:20px; height:20px;
+  justify-content:center;
+  align-items:center;
   border-radius:50%;
   background:var(--panel);
   color:var(--accent);
   font-weight:bold;
   cursor:pointer;
-  flex-shrink:0;
-  transition: background 0.3s, color 0.3s;
+  font-size:12px;
+  margin-left:2px;
 }
-.ayah-number:hover{background:var(--accent); color:#000;}
 
 /* Footer */
 .footer{display:flex;justify-content:space-between;padding:10px;border-top:1px solid var(--border);font-size:16px;}
@@ -124,13 +144,14 @@ body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
     <button class="menu-btn" onclick="toggleMenu()">☰ السور</button>
     <button class="menu-btn" onclick="toggleTheme()">🌙</button>
     <div class="header-title" id="title">القرآن الكريم</div>
+    <button class="menu-btn" onclick="changeFontSize(2)">A+</button>
+    <button class="menu-btn" onclick="changeFontSize(-2)">A-</button>
   </div>
 
   <div id="scrollBar">الجزء: <span id="juz-bar">-</span> | الحزب: <span id="hizb-bar">-</span></div>
 
   <div class="home" id="home">
     <div class="tasbeeh">
-      <!-- Circle 1 -->
       <div class="circle-box" id="c1-circle">
         <svg class="circle-svg" width="220" height="220">
           <circle cx="110" cy="110" r="100" stroke="var(--panel)" stroke-width="10" fill="none"/>
@@ -141,7 +162,6 @@ body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
         <div class="circle-text">سبحان الله</div>
         <button onclick="inc('c1')"> اذكر</button>
       </div>
-      <!-- Circle 2 -->
       <div class="circle-box" id="c2-circle">
         <svg class="circle-svg" width="220" height="220">
           <circle cx="110" cy="110" r="100" stroke="var(--panel)" stroke-width="10" fill="none"/>
@@ -152,7 +172,6 @@ body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
         <div class="circle-text">الحمد لله</div>
         <button onclick="inc('c2')">اذكر</button>
       </div>
-      <!-- Circle 3 -->
       <div class="circle-box" id="c3-circle">
         <svg class="circle-svg" width="220" height="220">
           <circle cx="110" cy="110" r="100" stroke="var(--panel)" stroke-width="10" fill="none"/>
@@ -179,7 +198,7 @@ body{margin:0;font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
 <script>
 const storage={get(k,d){return JSON.parse(localStorage.getItem(k)||JSON.stringify(d));},set(k,v){localStorage.setItem(k,JSON.stringify(v));}};
 
-/* ===== Tasbeeh Circular with Bounce ===== */
+/* ===== Tasbeeh Circular ===== */
 const max=33;
 function inc(id){
   const el=document.getElementById(id);
@@ -222,9 +241,18 @@ fetch("https://api.quran.com/api/v4/chapters?language=ar")
   div.onclick=()=>loadSurah(s.id,s.name_arabic); surahList.appendChild(div);
 });});
 
-/* ===== Load Ayat Full with clickable numbers ===== */
+/* ===== Load Ayat Full - وسط الصفحة ===== */
 let currentSurah=null;
 let currentAudio=null; 
+let ayahFontSize = 22; // الحجم الافتراضي
+
+function changeFontSize(delta){
+  ayahFontSize += delta;
+  if(ayahFontSize < 12) ayahFontSize = 12;
+  if(ayahFontSize > 40) ayahFontSize = 40;
+  document.querySelectorAll('.ayah span').forEach(s => s.style.fontSize = ayahFontSize + 'px');
+}
+
 function loadSurah(id,name){
   currentSurah={id,name};
   document.getElementById("title").textContent=name;
@@ -233,7 +261,7 @@ function loadSurah(id,name){
   const reader=document.getElementById("reader");
   reader.style.display="block"; 
   reader.innerHTML="جاري تحميل الآيات...";
-  
+
   fetch(`https://api.quran.com/api/v4/verses/by_chapter/${id}?fields=text_uthmani,juz_number,hizb_number,verse_number&per_page=350`)
   .then(r=>r.json())
   .then(d=>{
@@ -245,22 +273,21 @@ function loadSurah(id,name){
       a.dataset.hizb=v.hizb_number;
       a.dataset.verse=v.verse_number;
 
-      // رقم الآية دائري clickable
+      // رقم الآية دائري
       const num=document.createElement("div");
       num.className="ayah-number";
       num.textContent=v.verse_number;
       num.onclick=()=>{
-        if(currentAudio){
-          currentAudio.pause();
-          currentAudio.currentTime=0;
-        }
+        if(currentAudio){ currentAudio.pause(); currentAudio.currentTime=0; }
         currentAudio=new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${v.id}.mp3`);
         currentAudio.play();
       };
       a.appendChild(num);
 
+      // نص الآية
       const text=document.createElement("span");
       text.textContent=v.text_uthmani;
+      text.style.fontSize=ayahFontSize + 'px';
       a.appendChild(text);
 
       reader.appendChild(a);
@@ -274,7 +301,7 @@ function loadSurah(id,name){
   });
 }
 
-/* ===== Scroll Highlight ديناميكي ===== */
+/* ===== Scroll Highlight ===== */
 const reader=document.getElementById("reader");
 const observer=new IntersectionObserver(entries=>{
   entries.forEach(e=>{
