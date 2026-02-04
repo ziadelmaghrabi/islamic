@@ -11,8 +11,9 @@
 }
 .light{--bg:#f5f0e8;--panel:#e0d7cc;--border:#b6a99a;--text:#000;--accent:#6d4c41;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
-.app{display:flex;height:100vh;overflow:hidden;flex-direction:row-reverse;}
+html, body{height:100%; width:100%; overflow:hidden; font-family:'Amiri',serif;}
+body{background:var(--bg); color:var(--text);}
+.app{display:flex;height:100%;width:100%;overflow:hidden;flex-direction:row-reverse;}
 
 /* Sidebar */
 .sidebar{
@@ -90,7 +91,7 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
 padding:6px 10px;font-weight:bold;font-size:16px;border-bottom:1px solid var(--border);text-align:center;z-index:100;display:none;}
 
 /* Tasbeeh */
-.home{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;align-items:center;}
+.home{flex:1;overflow-y:auto;overflow-x:hidden;padding:20px;display:flex;flex-direction:column;align-items:center;min-height:100%;}
 .tasbeeh{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:20px;width:100%;max-width:900px;}
 .circle-box{position:relative;width:100%;max-width:200px;aspect-ratio:1;border-radius:50%;
 display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;user-select:none;
@@ -105,17 +106,23 @@ display:flex;flex-direction:column;align-items:center;justify-content:center;cur
 
 /* Reader */
 .reader{flex:1;overflow:auto;padding:20px;text-align:center;position:relative;}
-.ayah{display:inline-block;margin:6px 4px;line-height:2.2;text-align:center;}
+.ayah{display:inline-block;margin:6px 4px;line-height:2.2;text-align:center;position:relative;}
 .ayah-number{display:inline-flex;width:30px;height:30px;align-items:center;justify-content:center;
 border-radius:50%;background:var(--panel);color:var(--accent);font-size:16px;font-weight:bold;
 cursor:pointer;margin-left:2px;transition:.2s;position:relative;top:-3px;}
 .ayah-number.active{background:var(--accent);color:#000;}
-.ayah-number.marked{border:2px solid red;}
+.ayah-number.marked::after{
+  content:'📌';
+  position:absolute;
+  top:-12px;
+  right:-12px;
+  font-size:16px;
+}
 .basmala{font-size:28px;font-weight:bold;color:var(--accent);margin:20px 0;text-align:center;line-height:1.5;}
 
 /* Next Surah Button */
-.next-surah-btn{display:block;margin:50px auto 20px auto;padding:10px 20px;background:var(--accent);
-color:#000;font-weight:bold;border:none;border-radius:8px;cursor:pointer;transition:.2s;}
+.next-surah-btn{display:block;margin:50px auto 10px auto;padding:10px 20px;background:var(--accent);
+color:#000;font-weight:bold;border:none;border-radius:8px;cursor:pointer;transition:.2s;width:90%;max-width:300px;}
 .next-surah-btn:hover{background:#ffdb4d;}
 
 /* Footer */
@@ -164,18 +171,24 @@ padding:12px;margin:10px;width:90%;max-width:300px;text-align:center;margin-top:
 
   <div id="scrollInfo">الجزء: <span id="juz-bar">-</span> | الحزب: <span id="hizb-bar">-</span></div>
 
-  <div class="home" id="home">
+  <!-- ...نفس الـ HTML من قبل حتى نهاية div.home ... -->
+
+<div class="home" id="home">
     <div class="tasbeeh" id="tasbeeh-container"></div>
     <div id="maBox">
       <h4>مجموع التسبيحات</h4>
       <div id="totalCount">0</div>
       <p>تذكير: الذكر يرفع درجاتك ويقربك من الله، استمر!</p>
     </div>
-  </div>
+    <!-- الفوتر داخل الصفحة الرئيسة -->
+    <div class="footer">© زياد أيمن المغربي</div>
+</div>
 
-  <div class="reader" id="reader"></div>
+<div class="reader" id="reader"></div>
 
-  <div class="footer">© زياد أيمن المغربي</div>
+<!-- الفوتر يظهر هنا أيضاً عند قراءة السور -->
+<div class="footer">© زياد أيمن المغربي</div>
+
 </div>
 </div>
 
@@ -187,7 +200,7 @@ padding:12px;margin:10px;width:90%;max-width:300px;text-align:center;margin-top:
 // ---------- Storage ----------
 const storage={get:(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
 const max=33,radius=75,circ=2*Math.PI*radius;
-let ayahFontSize=22,lastTap=0,currentAudio=null;
+let ayahFontSize=22,lastTap=0,currentAudio=null,lastMarked=null;
 
 // ---------- Tasbeeh ----------
 const tasbeehs=[
@@ -261,28 +274,13 @@ if(storage.get("theme",false))document.body.classList.add("light");
 // ---------- Sidebar Toggle ----------
 const sidebar = document.getElementById("sidebar");
 const menuToggle = document.getElementById("menuToggle");
-
 menuToggle.addEventListener("click", ()=>{
   sidebar.classList.add("open");
-  menuToggle.style.display = "none";
+  menuToggle.style.display="none"; 
 });
 
 // ---------- Surahs ----------
-const allSurahs=[
-"الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس",
-"هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
-"الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم",
-"لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر",
-"فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق",
-"الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة",
-"الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج",
-"نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس",
-"التكوير","الإنفطار","المطففين","الإنشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد",
-"الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات",
-"القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر",
-"المسد","الإخلاص","الفلق","الناس"
-];
-
+const allSurahs=[/* أسماء السور كما في كودك السابق */ "الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة","يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه","الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم","لقمان","السجدة","الأحزاب","سبأ","فاطر","يس","الصافات","ص","الزمر","غافر","فصلت","الشورى","الزخرف","الدخان","الجاثية","الأحقاف","محمد","الفتح","الحجرات","ق","الذاريات","الطور","النجم","القمر","الرحمن","الواقعة","الحديد","المجادلة","الحشر","الممتحنة","الصف","الجمعة","المنافقون","التغابن","الطلاق","التحريم","الملك","القلم","الحاقة","المعارج","نوح","الجن","المزمل","المدثر","القيامة","الإنسان","المرسلات","النبأ","النازعات","عبس","التكوير","الإنفطار","المطففين","الإنشقاق","البروج","الطارق","الأعلى","الغاشية","الفجر","البلد","الشمس","الليل","الضحى","الشرح","التين","العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل","قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
 const surahList=document.getElementById("surahList");
 const surahSearch=document.getElementById("surahSearch");
 
@@ -307,10 +305,9 @@ const hizbBar=document.getElementById("hizb-bar");
 const scrollInfo=document.getElementById("scrollInfo");
 const maBox=document.getElementById("maBox");
 
- let markedAyah = storage.get("markedAyah", null);
-
+// ---------- Load Surah ----------
 function loadSurah(id,name){
-  sidebar.classList.remove("open");   
+  sidebar.classList.remove("open");  
   menuToggle.style.display = "block"; 
   home.style.display="none"; 
   reader.style.display="block"; 
@@ -318,6 +315,8 @@ function loadSurah(id,name){
   scrollInfo.style.display="block"; 
   maBox.style.display="none"; 
   reader.innerHTML="جاري التحميل...";
+
+  if(currentAudio) { currentAudio.pause(); currentAudio=null; } // فصل الصوت عند الخروج
 
   fetch(`https://api.quran.com/api/v4/verses/by_chapter/${id}?fields=text_uthmani,juz_number,hizb_number,verse_number&per_page=400`)
   .then(r=>r.json()).then(d=>{
@@ -333,28 +332,19 @@ function loadSurah(id,name){
 
     d.verses.forEach(v=>{
       const a=document.createElement("div"); a.className="ayah";
-      a.dataset.juz=v.juz_number; a.dataset.hizb=v.hizb_number;
+      a.dataset.juz=v.juz_number; a.dataset.hizb=v.hizb_number; a.dataset.verse=v.verse_number;
       const txt=document.createElement("span"); txt.textContent=v.text_uthmani; txt.style.fontSize=ayahFontSize+"px";
       const num=document.createElement("span"); num.className="ayah-number"; num.textContent=v.verse_number;
-      if(markedAyah && markedAyah.chapter==id && markedAyah.verse==v.verse_number) num.classList.add("marked");
-
+      
+      // تحميل الصوت وتشغيله/إيقافه عند الضغط
       num.onclick = ()=>{
-        if(currentAudio && !currentAudio.paused) { currentAudio.pause(); currentAudio=null; num.classList.remove("active"); return; }
+        if(lastMarked) lastMarked.classList.remove("marked");
+        if(lastMarked===num){ lastMarked=null; if(currentAudio){ currentAudio.pause(); currentAudio=null; } return;}
+        num.classList.add("marked"); lastMarked=num;
         if(currentAudio) currentAudio.pause();
         currentAudio = new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${v.id}.mp3`);
         currentAudio.play().catch(()=>{});
-        document.querySelectorAll(".ayah-number").forEach(n=>n.classList.remove("active"));
-        num.classList.add("active");
       };
-
-      num.oncontextmenu = (e)=>{
-        e.preventDefault();
-        document.querySelectorAll(".ayah-number.marked").forEach(n=>n.classList.remove("marked"));
-        num.classList.add("marked");
-        markedAyah={chapter:id,verse:v.verse_number};
-        storage.set("markedAyah",markedAyah);
-      };
-
       a.append(txt,num); reader.appendChild(a); a.style.textAlign='center';
     });
 
@@ -384,7 +374,7 @@ function showHome(){
   reader.style.display="none"; home.style.display="flex"; title.textContent="القرآن الكريم";
   scrollInfo.style.display="none"; maBox.style.display="block"; 
   juzBar.textContent='-'; hizbBar.textContent='-';
-  if(currentAudio) { currentAudio.pause(); currentAudio=null; }
+  if(currentAudio){ currentAudio.pause(); currentAudio=null; } // فصل الصوت عند العودة
 }
 </script>
 </body>
