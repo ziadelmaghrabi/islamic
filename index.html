@@ -23,14 +23,17 @@ transition:.3s;z-index:1000;overflow:auto;border-radius:10px 0 0 10px;}
 .header{display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--panel);border-bottom:1px solid var(--border);border-radius:0 0 12px 12px;position:relative;gap:8px;}
 .menu-btn{background:var(--accent);border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:16px;font-weight:bold;color:#000;transition:transform 0.2s, box-shadow 0.2s;}
 .menu-btn:hover{transform:scale(1.1);box-shadow:0 0 10px var(--accent);}
-.header-title{flex:1;text-align:center;font-size:24px;font-weight:bold;color:var(--accent);}
-#scrollInfo{position:sticky;top:0;background:var(--panel);color:var(--accent);padding:6px 10px;font-weight:bold;font-size:16px;border-bottom:1px solid var(--border);text-align:center;z-index:100;display:none;}
+.header-title{flex:1;text-align:center;font-size:26px;font-weight:bold;color:var(--accent);}
+#scrollInfo{position:sticky;top:0;background:var(--panel);color:var(--accent);
+padding:6px 10px;font-weight:bold;font-size:16px;border-bottom:1px solid var(--border);text-align:center;z-index:100;display:none;}
 .home{flex:1;overflow:hidden;padding:10px;display:flex;flex-direction:column;align-items:center;position:relative;}
-.tasbeeh{display:grid;grid-template-columns:repeat(2,1fr);gap:25px;width:100%;max-width:500px;margin-top:90px;justify-items:center;}
-.circle-box{position:relative;width:100%;max-width:200px;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-tap-highlight-color:transparent;transition:.2s, box-shadow .3s;box-shadow:0 0 20px rgba(0,0,0,.3);}
-.circle-box:active{transform:scale(.96);}
-.circle-number{font-size:50px;font-weight:bold;color:#ffcc00;text-shadow:0 0 6px #ffcc00;}
-.circle-text{font-size:18px;text-align:center;padding:0 6px;word-wrap:break-word;color:#ffcc00;text-shadow:0 0 4px #ffcc00;}
+.tasbeeh{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:25px;width:100%;max-width:1000px;margin-top:120px;}
+.circle-box{position:relative;width:100%;max-width:220px;aspect-ratio:1;border-radius:50%;
+display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;user-select:none;
+-webkit-tap-highlight-color:transparent;transition:.2s;box-shadow:0 0 20px rgba(0,0,0,.3);}
+.circle-box:active{transform:scale(.96);box-shadow:0 0 30px var(--accent);}
+.circle-number{font-size:50px;color:var(--accent);font-weight:bold;line-height:1.1;}
+.circle-text{font-size:18px;text-align:center;padding:0 6px;word-wrap:break-word;color:var(--accent);}
 .circle-svg{position:absolute;inset:0;}
 .circle-svg circle{fill:none;stroke-width:8;}
 .circle-bg{stroke:var(--panel);}
@@ -39,17 +42,20 @@ transition:.3s;z-index:1000;overflow:auto;border-radius:10px 0 0 10px;}
 #basmala{font-size:36px;font-weight:bold;margin-bottom:10px;}
 .ayah{display:inline-block;margin:6px 4px;line-height:2.2;text-align:center;position:relative;}
 .ayah span{font-size:calc(18px + 0.5vw);word-wrap:break-word;}
-.ayah-number{display:inline-flex;width:36px;height:36px;align-items:center;justify-content:center;border-radius:50%;background:var(--panel);color:var(--accent);font-size:16px;font-weight:bold;cursor:pointer;margin-left:4px;transition:.2s;position:relative;top:-3px;}
+.ayah-number{display:inline-flex;width:40px;height:40px;align-items:center;justify-content:center;
+border-radius:50%;background:var(--panel);color:var(--accent);font-size:16px;font-weight:bold;
+cursor:pointer;margin-left:4px;transition:.2s;position:relative;top:-3px;}
 .ayah-number.active{background:var(--accent);color:#000;}
 .ayah-number.bookmark::after{content:"📌";position:absolute;top:-10px;right:-10px;font-size:16px;}
 .highlight-audio{background:rgba(255,204,0,0.3);border-radius:8px;}
 .footer{padding:10px;text-align:center;border-top:1px solid var(--border);color:var(--accent);position:relative;z-index:10;}
-#prayerBox{position:fixed;bottom:230px;left:20px;background:var(--accent);color:#000;padding:10px 15px;border-radius:12px;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,0.4);text-align:center;z-index:1001;user-select:none;}
-#maBox{position:fixed;bottom:70px;left:20px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 20px;max-width:250px;text-align:center;color:var(--accent);box-shadow:0 4px 15px rgba(0,0,0,0.4);font-size:16px;z-index:1000;display:flex;flex-direction:column;align-items:center;}
+#prayerBox{position:absolute;top:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#000;padding:10px 20px;border-radius:12px;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,0.4);text-align:center;z-index:1001;user-select:none;}
+#maBox{position:fixed;bottom:70px;left:50%;transform:translateX(-50%);background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 20px;max-width:280px;text-align:center;color:var(--accent);box-shadow:0 4px 15px rgba(0,0,0,0.4);font-size:16px;z-index:1000;display:flex;flex-direction:column;align-items:center;}
+#maBox h5{margin-top:8px;font-size:14px;color:#ffcc00;}
 #bookmarkCircle{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#ffcc00,#ffaa00);color:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:bold;font-size:12px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.5);border:2px solid #000;cursor:pointer;flex-shrink:0;transition: transform 0.2s, box-shadow 0.2s;}
 #bookmarkCircle span:first-child{font-size:16px;}
 #bookmarkCircle:hover{transform:scale(1.15);box-shadow:0 0 15px #ffcc00,0 0 25px #ffaa00;}
-.next-surah-arrow{margin-top:15px;font-size:48px;cursor:pointer;color:var(--accent);animation:bounce 1s infinite;text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);}
+.next-surah-arrow{margin-top:15px;font-size:50px;cursor:pointer;color:var(--accent);animation:bounce 1s infinite;text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);}
 @keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}60%{transform:translateY(-5px);}}
 </style>
 </head>
@@ -80,12 +86,12 @@ transition:.3s;z-index:1000;overflow:auto;border-radius:10px 0 0 10px;}
     <div id="scrollInfo">الجزء: <span id="juz-bar">-</span> | الحزب: <span id="hizb-bar">-</span></div>
 
     <div class="home" id="home">
+      <div id="prayerBox">صلى على النبي ﷺ</div>
       <div class="tasbeeh" id="tasbeeh-container"></div>
+      <div id="maBox"><h4>مجموع التسبيحات</h4><div id="totalCount">0</div><h5>فضل التسبيح: زيادة الأجر والطمأنينة</h5></div>
     </div>
 
     <div class="reader" id="reader"></div>
-    <div id="prayerBox"><p>صلى على النبي ﷺ</p></div>
-    <div id="maBox"><h4>مجموع التسبيحات</h4><div id="totalCount">0</div></div>
     <div class="footer">© زياد أيمن المغربي</div>
   </div>
 </div>
@@ -93,11 +99,11 @@ transition:.3s;z-index:1000;overflow:auto;border-radius:10px 0 0 10px;}
 <audio id="tapSound" preload="auto"><source src="https://cdn.pixabay.com/audio/2022/03/15/audio_9b5b4a1a8a.mp3"></audio>
 
 <script>
-// ----------------- Variables & Storage -----------------
+// ---------- Variables ----------
 const storage={get:(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
 let ayahFontSize=22, currentAudio=null, lastActiveAyah=null;
 
-// ----------------- Surahs -----------------
+// ---------- Surahs ----------
 const allSurahs=[ "الفاتحة","البقرة","آل عمران","النساء","المائدة","الأنعام","الأعراف","الأنفال","التوبة",
 "يونس","هود","يوسف","الرعد","إبراهيم","الحجر","النحل","الإسراء","الكهف","مريم","طه",
 "الأنبياء","الحج","المؤمنون","النور","الفرقان","الشعراء","النمل","القصص","العنكبوت","الروم",
@@ -110,7 +116,7 @@ const allSurahs=[ "الفاتحة","البقرة","آل عمران","النسا�
 "العلق","القدر","البينة","الزلزلة","العاديات","القارعة","التكاثر","العصر","الهمزة","الفيل",
 "قريش","الماعون","الكوثر","الكافرون","النصر","المسد","الإخلاص","الفلق","الناس"];
 
-// ----------------- Sidebar -----------------
+// ---------- Sidebar ----------
 const surahList=document.getElementById("surahList");
 const surahSearch=document.getElementById("surahSearch");
 function renderSurahList(filter=""){
@@ -127,56 +133,57 @@ function renderSurahList(filter=""){
 renderSurahList();
 surahSearch.addEventListener("input",e=>renderSurahList(e.target.value));
 
-// ----------------- Tasbeeh -----------------
+// ---------- Tasbeeh ----------
 const tasbeehs=[{id:'c1',text:'سبحان الله'},{id:'c2',text:'الحمد لله'},{id:'c3',text:'الله أكبر'},
 {id:'c4',text:'لا إله إلا الله'},{id:'c5',text:'أشهد أن لا إله إلا الله'},{id:'c6',text:'لا حول ولا قوة إلا بالله'}];
 const tasbeehContainer=document.getElementById("tasbeeh-container");
 const totalCount=document.getElementById("totalCount");
-function updateTotal(){const total=tasbeehs.reduce((sum,t)=>sum+(storage.get("tasbeeh",{})[t.id]||0),0); totalCount.textContent=total;}
+
+function updateTotal(){ 
+  const total=tasbeehs.reduce((sum,t)=>sum+(storage.get("tasbeeh",{})[t.id]||0),0);
+  totalCount.textContent=total;
+}
+
 function initTasbeeh(){
   tasbeehContainer.innerHTML="";
   tasbeehs.forEach(t=>{
     const div=document.createElement("div");
-    div.className="circle-box"; div.id=t.id+"-circle";
+    div.className="circle-box";
+    div.id=t.id+"-circle";
     div.innerHTML=`
       <svg class="circle-svg" viewBox="0 0 160 160">
         <circle class="circle-bg" cx="80" cy="80" r="75"/>
         <circle class="circle-progress" id="${t.id}-progress" cx="80" cy="80" r="75"/>
       </svg>
       <div class="circle-number" id="${t.id}">0</div>
-      <div class="circle-text">${t.text}</div>`;
+      <div class="circle-text">${t.text}</div>
+    `;
     tasbeehContainer.appendChild(div);
-    const numEl=document.getElementById(t.id);
-    let counter=storage.get("tasbeeh",{})[t.id]||0;
-    numEl.textContent=counter;
-    const progress=document.getElementById(t.id+"-progress");
-    progress.style.strokeDashoffset=471-(counter%33)/33*471;
 
-    const glowEffect=()=>{div.style.boxShadow=`0 0 20px #ffcc00, 0 0 40px #ffcc00`; setTimeout(()=>div.style.boxShadow="0 0 20px rgba(0,0,0,.3)",400);}
+    const numberEl = document.getElementById(t.id);
+    const progressEl = document.getElementById(t.id+"-progress");
+    let v = storage.get("tasbeeh",{})[t.id]||0;
+    numberEl.textContent = v;
+    progressEl.style.strokeDashoffset = 471 - (v%33)/33*471;
 
+    // زيادة العد عند الضغط
     div.addEventListener("click",()=>{
-      counter++; numEl.textContent=counter; progress.style.strokeDashoffset=471-(counter%33)/33*471;
-      updateTotal(); document.getElementById("tapSound").play().catch(()=>{}); glowEffect();
-      if(counter%33===0){ div.style.transition="box-shadow 0.4s ease-in-out"; div.style.boxShadow=`0 0 40px #ffcc00, 0 0 60px #ffaa00`; setTimeout(()=>div.style.boxShadow="0 0 20px rgba(0,0,0,.3)",1000);}
-      storage.set("tasbeeh",{...storage.get("tasbeeh",{}),[t.id]:counter});
+      v++;
+      numberEl.textContent = v;
+      storage.set("tasbeeh",{...storage.get("tasbeeh",{}),[t.id]:v});
+      progressEl.style.strokeDashoffset = 471 - (v%33)/33*471;
+      updateTotal();
+      document.getElementById("tapSound").play().catch(()=>{});
     });
-
-    let longPressTimer=null;
-    const startPress=()=>{ 
-      longPressTimer=setTimeout(()=>{ counter=0; numEl.textContent=0; progress.style.strokeDashoffset=471; updateTotal();
-        storage.set("tasbeeh",{...storage.get("tasbeeh",{}),[t.id]:0}); div.style.boxShadow=`0 0 40px #ff4444,0 0 60px #ff6666`; setTimeout(()=>div.style.boxShadow="0 0 20px rgba(0,0,0,.3)",800);},800);
-    }
-    const endPress=()=>{ clearTimeout(longPressTimer);}
-    div.addEventListener("mousedown",startPress); div.addEventListener("touchstart",startPress);
-    div.addEventListener("mouseup",endPress); div.addEventListener("mouseleave",endPress); div.addEventListener("touchend",endPress);
   });
   updateTotal();
 }
 
-// ----------------- Bookmark -----------------
+// ---------- Bookmark ----------
 const bmCircle=document.getElementById("bookmarkCircle");
 const bmSurah=document.getElementById("bmSurah");
 const bmAyah=document.getElementById("bmAyah");
+
 function saveBookmark(surah,verse){
   storage.set("bookmark",{surah:surah,verse:verse});
   bmSurah.textContent=surah;
@@ -188,7 +195,7 @@ function loadBookmark(){
 }
 bmCircle.onclick=()=>{if(!bmAyah.textContent) return; const target=document.querySelector(".ayah-number.bookmark"); if(target){target.scrollIntoView({behavior:'smooth',block:'center'}); target.classList.add("highlight-audio"); setTimeout(()=>target.classList.remove("highlight-audio"),1500);}};
 
-// ----------------- Reader -----------------
+// ---------- Reader ----------
 const reader=document.getElementById("reader");
 const home=document.getElementById("home");
 const title=document.getElementById("title");
@@ -196,8 +203,12 @@ const juzBar=document.getElementById("juz-bar");
 const hizbBar=document.getElementById("hizb-bar");
 
 function loadSurah(id,name){
-  home.style.display="none"; reader.style.display="block"; scrollInfo.style.display="block"; title.textContent=name; reader.innerHTML="جاري التحميل...";
+  home.style.display="none"; reader.style.display="block";
+  scrollInfo.style.display="block"; title.textContent=name; reader.innerHTML="جاري التحميل...";
   tasbeehContainer.style.display="none"; document.getElementById("maBox").style.display="none"; document.getElementById("prayerBox").style.display="none";
+
+  if(currentAudio){currentAudio.pause(); currentAudio=null;}
+
   fetch(`https://api.quran.com/api/v4/verses/by_chapter/${id}?fields=text_uthmani,juz_number,hizb_number,verse_number&per_page=400`)
   .then(r=>r.json()).then(d=>{
     reader.innerHTML="";
@@ -209,8 +220,11 @@ function loadSurah(id,name){
       const num=document.createElement("span"); num.className="ayah-number"; num.textContent=v.verse_number;
 
       num.onclick=()=>{
-        if(currentAudio) currentAudio.pause();
-        if(lastActiveAyah) lastActiveAyah.parentElement.classList.remove("highlight-audio"); 
+        if(currentAudio){
+          if(currentAudio.src.includes(v.id) && !currentAudio.paused){ 
+            currentAudio.pause(); a.classList.remove("highlight-audio"); num.classList.remove("active"); return; 
+          } else { currentAudio.pause(); if(lastActiveAyah) lastActiveAyah.parentElement.classList.remove("highlight-audio"); }
+        }
         currentAudio=new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${v.id}.mp3`);
         currentAudio.play().catch(()=>{});
         if(lastActiveAyah) lastActiveAyah.classList.remove("active");
