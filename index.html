@@ -137,7 +137,11 @@ const reader=document.getElementById("reader");
 const title=document.getElementById("title");
 const juzBar=document.getElementById("juz-bar");
 const hizbBar=document.getElementById("hizb-bar");
-function showHome(){if(currentAudio){currentAudio.pause();currentAudio=null;}reader.style.display="none";home.style.display="flex";title.textContent="📖 اقرأ";scrollInfo.style.display="none";tasbeehContainer.style.display="grid";juzBar.textContent='-';hizbBar.textContent='-';}
+function showHome(){
+  if(currentAudio){currentAudio.pause();currentAudio=null;}
+  reader.style.display="none"; home.style.display="flex"; title.textContent="📖 اقرأ"; scrollInfo.style.display="none";
+  tasbeehContainer.style.display="grid"; juzBar.textContent='-'; hizbBar.textContent='-';
+}
 
 // ---------- Tasbeeh ----------
 const tasbeehs=[{id:'c1',text:'سبحان الله'},{id:'c2',text:'الحمد لله'},{id:'c3',text:'الله أكبر'},{id:'c4',text:'لا إله إلا الله'},{id:'c5',text:'أشهد أن لا إله إلا الله'},{id:'c6',text:'لا حول ولا قوة إلا بالله'}];
@@ -161,7 +165,6 @@ function initTasbeeh(){
 
     let longPressTimer;
 
-    // ---- الضغط المطول للتصفير ----
     const startLongPress = () => { longPressTimer=setTimeout(()=>{
       document.getElementById(t.id).textContent = 0;
       document.getElementById(t.id+"-progress").style.strokeDashoffset = 471;
@@ -174,7 +177,6 @@ function initTasbeeh(){
     div.addEventListener("mouseleave", cancelLongPress);
     div.addEventListener("touchend", cancelLongPress);
 
-    // ---- الضغط العادي للزيادة ----
     div.addEventListener("click", ()=>{
       let val = +document.getElementById(t.id).textContent + 1;
       document.getElementById(t.id).textContent = val;
@@ -217,7 +219,6 @@ function loadSurah(id,name){
         lastActiveAyah=num;
       }
 
-      // Long press for bookmark
       const startLongPress=()=>{longPressTimer=setTimeout(()=>{saveBookmark(name,v.verse_number);document.querySelectorAll(".ayah-number.bookmark").forEach(n=>n.classList.remove("bookmark"));num.classList.add("bookmark");},800);}
       const cancelLongPress=()=>{clearTimeout(longPressTimer);}
       num.addEventListener("mousedown",startLongPress);num.addEventListener("touchstart",startLongPress);
@@ -227,6 +228,14 @@ function loadSurah(id,name){
 
       if(index===d.verses.length-1 && id<allSurahs.length){const arrow=document.createElement("div");arrow.className="next-surah-arrow";arrow.innerHTML="⬇";arrow.onclick=()=>loadSurah(id+1,allSurahs[id]);a.appendChild(arrow);}
     });
+
+    // ---------- تحديث الجزء والحزب مباشرة ----------
+    const firstAyah = reader.querySelector(".ayah");
+    if(firstAyah){
+      juzBar.textContent = firstAyah.dataset.juz;
+      hizbBar.textContent = firstAyah.dataset.hizb;
+      scrollInfo.style.display = "block";
+    }
 
     const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){juzBar.textContent=e.target.dataset.juz; hizbBar.textContent=e.target.dataset.hizb;}});},{root:reader,rootMargin:'-50% 0px -50% 0px',threshold:0});
     [...reader.children].forEach(a=>obs.observe(a));
