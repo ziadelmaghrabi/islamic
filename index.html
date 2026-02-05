@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -6,41 +6,81 @@
 <title>📖 اقرأ</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#1e1e1e;--panel:#2b2b2b;--border:#444;--text:#f0f0f0;--accent:#ffcc00;}
-.light{--bg:#f5f0e8;--panel:#e0d7cc;--border:#b6a99a;--text:#000;--accent:#6d4c41;}
+:root{
+  --bg:#1e1e1e;
+  --panel:#2b2b2b;
+  --border:#444;
+  --text:#f0f0f0;
+  --accent:#ffcc00;
+}
+.light{
+  --bg:#fdf6e3;        /* خلفية فاتحة مريحة */
+  --panel:#f7e8d1;     /* صناديق ودوائر */
+  --border:#d1bfa5;    /* الحدود */
+  --text:#333;          /* نص غامق للوضوح */
+  --accent:#ff9800;     /* لون التسبيح */
+}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);}
 .app{display:flex;height:100vh;overflow:hidden;flex-direction:row-reverse;}
-.sidebar{width:80%;max-width:260px;background:var(--panel);border-left:1px solid var(--border);
-padding:12px;position:fixed;right:0;top:0;height:100vh;transform:translateX(100%);
-transition:.3s;z-index:1000;overflow:auto;border-radius:10px 0 0 10px;}
+.sidebar{
+  width:80%;max-width:260px;background:var(--panel);border-left:1px solid var(--border);
+  padding:12px;position:fixed;right:0;top:0;height:100vh;transform:translateX(100%);
+  transition:.3s;z-index:1000;overflow:auto;border-radius:10px 0 0 10px;
+}
 .sidebar.open{transform:translateX(0);}
 .surah-item{padding:10px;border-bottom:1px solid var(--border);cursor:pointer;transition:.2s;}
 .surah-item:hover{background:var(--accent);color:#000;font-weight:bold;}
 #surahSearch{width:100%;padding:8px 10px;margin-bottom:10px;border-radius:6px;border:none;outline:none;}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);display:none;z-index:900;}
 .content{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative;}
-.header{display:flex;align-items:center;justify-content:space-between;padding:10px;background:var(--panel);border-bottom:1px solid var(--border);border-radius:0 0 12px 12px;position:relative;gap:8px;}
-.menu-btn{background:var(--accent);border:none;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:16px;font-weight:bold;color:#000;transition:transform 0.2s, box-shadow 0.2s;}
+.header{
+  display:flex;
+  flex-wrap:wrap;      /* مهم للهواتف */
+  align-items:center;
+  justify-content:space-between;
+  padding:10px;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
+  border-radius:0 0 12px 12px;
+  position:relative;
+  gap:6px;
+}
+.menu-btn{
+  background:var(--accent);
+  border:none;border-radius:8px;
+  padding:6px 10px;cursor:pointer;
+  font-size:16px;font-weight:bold;color:#000;
+  transition:transform 0.2s, box-shadow 0.2s;
+}
 .menu-btn:hover{transform:scale(1.1);box-shadow:0 0 10px var(--accent);}
 .header-title{flex:1;text-align:center;font-size:24px;font-weight:bold;color:var(--accent);}
-#scrollInfo{position:sticky;top:0;background:var(--panel);color:var(--accent);
-padding:6px 10px;font-weight:bold;font-size:16px;border-bottom:1px solid var(--border);text-align:center;z-index:100;display:none;}
+#scrollInfo{
+  position:sticky;top:0;background:var(--panel);color:var(--accent);
+  padding:6px 10px;font-weight:bold;font-size:16px;border-bottom:1px solid var(--border);text-align:center;z-index:100;display:none;
+}
 .home{flex:1;overflow:hidden;padding:10px;display:flex;flex-direction:column;align-items:center;position:relative;}
-#salatBox{position:absolute;top:60px;width:100%;text-align:center;font-size:18px;color:#000;background:linear-gradient(135deg,#ffcc00,#ffaa00);padding:10px 0;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.5);font-weight:bold;z-index:100;}
-.tasbeeh{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:25px;width:100%;max-width:1000px;margin-top:130px;}
-.circle-box{position:relative;width:100%;max-width:220px;aspect-ratio:1;border-radius:50%;
-display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;user-select:none;
--webkit-tap-highlight-color:transparent;transition:.2s;box-shadow:0 0 20px rgba(0,0,0,.3);}
+#salatBox{position:absolute;top:60px;width:100%;text-align:center;font-size:18px;color:#000;background:linear-gradient(135deg,var(--accent),#ffaa00);padding:10px 0;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.5);font-weight:bold;z-index:100;}
+.tasbeeh{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:25px;width:100%;max-width:1000px;margin-top:130px;
+}
+.circle-box{
+  position:relative;width:100%;max-width:220px;aspect-ratio:1;border-radius:50%;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;user-select:none;
+  -webkit-tap-highlight-color:transparent;transition:.2s;box-shadow:0 0 20px rgba(0,0,0,.3);
+}
 .circle-box:active{transform:scale(.96);box-shadow:0 0 30px var(--accent);}
 .circle-number{font-size:48px;color:var(--accent);font-weight:bold;line-height:1.1;}
-.circle-text{font-size:18px;text-align:center;padding:0 6px;word-wrap:break-word;color:#ffeb3b;text-shadow:0 0 8px #ffcc00;}
+.circle-text{font-size:18px;text-align:center;padding:0 6px;word-wrap:break-word;color:var(--accent);text-shadow:0 0 8px var(--accent);}
 .circle-svg{position:absolute;inset:0;}
 .circle-svg circle{fill:none;stroke-width:8;}
 .circle-bg{stroke:var(--panel);}
 .circle-progress{stroke:var(--accent);stroke-dasharray:471;stroke-dashoffset:471;transition:.3s;}
 #maBox{position:fixed;bottom:70px;left:20px;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:12px 20px;max-width:250px;text-align:center;color:var(--accent);box-shadow:0 4px 15px rgba(0,0,0,0.4);font-size:16px;z-index:1000;display:flex;flex-direction:column;align-items:center;}
-#maBox h4{margin-bottom:4px;} #maBox p{font-size:14px;color:#ffcc00;margin-top:4px;}
+#maBox h4{margin-bottom:4px;} #maBox p{font-size:14px;color:var(--accent);margin-top:4px;}
 .reader{flex:1;overflow:auto;padding:10px;text-align:center;display:none;position:relative;}
 #basmala{font-size:36px;font-weight:bold;margin-bottom:10px;}
 .ayah{display:inline-block;margin:6px 4px;line-height:2.2;text-align:center;position:relative;}
@@ -54,6 +94,12 @@ cursor:pointer;margin-left:4px;transition:.2s;position:relative;top:-3px;}
 .next-surah-arrow{margin-top:15px;font-size:48px;cursor:pointer;color:var(--accent);animation:bounce 1s infinite;text-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);}
 @keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0);}40%{transform:translateY(-10px);}60%{transform:translateY(-5px);}}
 .footer{padding:10px;text-align:center;border-top:1px solid var(--border);color:var(--accent);position:relative;z-index:10;}
+/* Responsive fixes */
+@media(max-width:480px){
+  .header{flex-wrap:wrap;gap:4px;}
+  .menu-btn{font-size:14px;padding:4px 6px;}
+  .tasbeeh{margin-top:150px;}
+}
 </style>
 </head>
 <body>
@@ -91,7 +137,6 @@ cursor:pointer;margin-left:4px;transition:.2s;position:relative;top:-3px;}
 </div>
 
 <audio id="tapSound" preload="auto"><source src="https://cdn.pixabay.com/audio/2022/03/15/audio_9b5b4a1a8a.mp3"></audio>
-
 <script>
 // ---------- Variables ----------
 const storage={get:(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
