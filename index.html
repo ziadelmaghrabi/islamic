@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -85,6 +85,7 @@ cursor:pointer;margin-left:4px;transition:.2s;position:relative;top:-3px;}
     </div>
 
     <div class="reader" id="reader"></div>
+
     <div class="footer">© زياد أيمن المغربي</div>
   </div>
 </div>
@@ -186,7 +187,7 @@ function loadBookmark(){
   const bm=storage.get("bookmark",null);
   if(bm){bmSurah.textContent=bm.surah; bmAyah.textContent=bm.verse;}
 }
-bmCircle.onclick=()=>{if(!bmAyah.textContent) return; const target=document.querySelector(".ayah-number.bookmark"); if(target){target.scrollIntoView({behavior:'smooth',block:'center'}); target.classList.add("highlight-audio"); setTimeout(()=>target.classList.remove("highlight-audio"),1500);}};
+bmCircle.onclick=()=>{if(!bmAyah.textContent) return; const target=document.querySelector(".ayah-number.bookmark"); if(target){target.scrollIntoView({behavior:'smooth',block:'center'}); target.classList.add("highlight-audio"); setTimeout(()=>target.classList.remove("highlight-audio"),1500);}};  
 
 // ---------- Reader ----------
 const reader=document.getElementById("reader");
@@ -222,7 +223,6 @@ function loadSurah(id,name){
         lastActiveAyah=num;
       }
 
-      // Long press for bookmark
       let longPressTimer=null;
       function startLongPress(){ longPressTimer=setTimeout(()=>{ saveBookmark(name,v.verse_number); document.querySelectorAll(".ayah-number.bookmark").forEach(n=>n.classList.remove("bookmark")); num.classList.add("bookmark"); bmSurah.textContent=name; bmAyah.textContent=v.verse_number;},800);}
       function cancelLongPress(){ clearTimeout(longPressTimer);}
