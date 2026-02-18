@@ -1,4 +1,4 @@
-   <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -69,6 +69,7 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);overflow-x
 .footer{padding:10px;text-align:center;border-top:1px solid var(--border);color:var(--accent);position:relative;z-index:10;background:var(--panel);}
 #bookmarkCircle{display:flex;align-items:center;gap:4px;cursor:pointer;font-size:16px;padding:4px 8px;border-radius:8px;background:var(--accent);color:#000;font-weight:bold;transition:.2s;}
 #bookmarkCircle:hover{transform:scale(1.1);box-shadow:0 0 10px var(--accent);}
+#welcomeModal{direction:rtl;}
 @media(max-width:480px){
   .header{flex-wrap:wrap;gap:4px;}
   .menu-btn{font-size:14px;padding:4px 6px;}
@@ -79,6 +80,26 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);overflow-x
 </style>
 </head>
 <body>
+
+<!-- نافذة ترحيبية -->
+<div id="welcomeModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:2000;visibility:hidden;opacity:0;transition:opacity 0.3s;">
+  <div style="background:var(--panel);padding:20px;border-radius:12px;max-width:500px;width:90%;text-align:right;position:relative;direction:rtl;">
+    <h2 style="color:var(--accent);margin-bottom:15px;text-align:center;">أهلاً بك في 📖 اقرأ</h2>
+    <p style="margin-bottom:15px;line-height:1.6;">
+      هدفنا مساعدتك على <strong>النطق الصحيح للآيات</strong> والاستماع لها.<br><br>
+      🎧 عند الضغط على <strong>رقم الآية</strong>، سيتم <strong>الاستماع للآية</strong>.<br>
+      📌 عند الضغط المطول على رقم الآية، سيتم وضع <strong>علامة للتذكير</strong> عند العودة لاحقًا.<br><br>
+      🌙 زر <strong>الثيم</strong>: لتغيير الألوان بين الوضع الداكن، الفاتح، والأخضر.<br>
+      ☰ زر <strong>القائمة</strong>: لفتح قائمة السور والبحث عن أي سورة.<br>
+      🏠 زر <strong>الرئيسية</strong>: للرجوع إلى الصفحة الرئيسية وعرض العدادات.<br>
+      A+ / A- : لتكبير أو تصغير حجم نص الآيات لسهولة القراءة.<br>
+      📌 <strong>المحفوظات</strong>: للانتقال مباشرة إلى آخر آية قمت بحفظها.
+    </p>
+    <button id="closeWelcome" style="background:var(--accent);color:#000;font-weight:bold;padding:8px 15px;border:none;border-radius:8px;cursor:pointer;display:block;margin:auto;">ابدأ الآن</button>
+  </div>
+</div>
+
+
 <div class="app">
   <div class="sidebar" id="sidebar">
     <h3>📖 السور</h3>
@@ -90,7 +111,6 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);overflow-x
     <div class="header">
       <button class="menu-btn" onclick="toggleMenu()">☰</button>
       <button class="menu-btn" onclick="toggleTheme()">🌙</button>
-      <button class="menu-btn" onclick="toggleGreenTheme()">🌿</button>
       <div class="header-title" id="title">📖 اقرأ</div>
       <button class="menu-btn" onclick="showHome()">🏠</button>
       <button class="menu-btn" onclick="changeFontSize(2)">A+</button>
@@ -110,7 +130,7 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);overflow-x
 <audio id="tapSound" preload="auto"><source src="https://cdn.pixabay.com/audio/2022/03/15/audio_9b5b4a1a8a.mp3"></audio>
 
 <script>
-// ---------- Variables ----------
+// ---------- Storage ----------
 const storage={get:(k,d)=>JSON.parse(localStorage.getItem(k)||JSON.stringify(d)),set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
 let ayahFontSize=22,currentAudio=null,lastActiveAyah=null;
 
@@ -192,11 +212,18 @@ function initTasbeeh(){
     `;
     tasbeehContainer.appendChild(div);
 
+    let savedCount = storage.get("tasbeeh-"+t.id,0);
+    document.getElementById(t.id).textContent = savedCount;
+    document.getElementById(t.id+"-progress").style.strokeDashoffset = 471 - (savedCount % 33)/33*471;
+
     let longPressTimer;
-    const startLongPress = () => { longPressTimer=setTimeout(()=>{
-      document.getElementById(t.id).textContent = 0;
-      document.getElementById(t.id+"-progress").style.strokeDashoffset = 471;
-    },800);}
+    const startLongPress = () => { 
+      longPressTimer=setTimeout(()=>{
+        document.getElementById(t.id).textContent = 0;
+        document.getElementById(t.id+"-progress").style.strokeDashoffset = 471;
+        storage.set("tasbeeh-"+t.id,0);
+      },800);
+    }
     const cancelLongPress = () => { clearTimeout(longPressTimer); }
 
     div.addEventListener("mousedown", startLongPress);
@@ -209,6 +236,7 @@ function initTasbeeh(){
       let val = +document.getElementById(t.id).textContent + 1;
       document.getElementById(t.id).textContent = val;
       document.getElementById(t.id+"-progress").style.strokeDashoffset = 471-(val%33)/33*471;
+      storage.set("tasbeeh-"+t.id,val);
     });
   });
 }
@@ -219,10 +247,31 @@ function changeFontSize(delta){ayahFontSize+=delta;if(ayahFontSize<12)ayahFontSi
 // ---------- Theme & Menu ----------
 const sidebar=document.getElementById("sidebar"); const overlay=document.getElementById("overlay");
 function toggleMenu(){sidebar.classList.toggle("open");overlay.style.display=sidebar.classList.contains("open")?"block":"none";}
-function toggleTheme(){document.body.classList.remove("green");document.body.classList.toggle("light");storage.set("theme",document.body.classList.contains("light"));}
-function toggleGreenTheme(){document.body.classList.remove("light");document.body.classList.toggle("green");storage.set("theme","green");}
-if(storage.get("theme",false)===true)document.body.classList.add("light");
-else if(storage.get("theme","")=="green")document.body.classList.add("green");
+
+// تعديل الثيم ليعمل على الثلاث أوضاع
+function toggleTheme() {
+  const body = document.body;
+  let current = storage.get("theme", "default"); // 'default' | 'light' | 'green'
+  if (current === "default") {
+    body.classList.remove("green");
+    body.classList.add("light");
+    storage.set("theme", "light");
+  } else if (current === "light") {
+    body.classList.remove("light");
+    body.classList.add("green");
+    storage.set("theme", "green");
+  } else {
+    body.classList.remove("light", "green");
+    storage.set("theme", "default");
+  }
+}
+
+// تحميل الثيم عند بدء الموقع
+window.addEventListener("load", () => {
+  const savedTheme = storage.get("theme", "default");
+  if (savedTheme === "light") document.body.classList.add("light");
+  else if (savedTheme === "green") document.body.classList.add("green");
+});
 
 // ---------- Load Surah ----------
 function loadSurah(id,name){
@@ -266,9 +315,26 @@ function loadSurah(id,name){
   });
 }
 
+// ---------- Welcome Modal ----------
+window.addEventListener("load", () => {
+  const hasVisited = storage.get("visited", false);
+  const modal = document.getElementById("welcomeModal");
+  const closeBtn = document.getElementById("closeWelcome");
+
+  if (!hasVisited) {
+    modal.style.visibility = "visible";
+    modal.style.opacity = "1";
+  }
+
+  closeBtn.onclick = () => {
+    modal.style.opacity = "0";
+    setTimeout(() => { modal.style.visibility = "hidden"; }, 300);
+    storage.set("visited", true); // حفظ أن المستخدم شاهد الرسالة
+  };
+});
+
 // ---------- Init ----------
 window.addEventListener("load",()=>{initTasbeeh();loadBookmark();showHome();});
 </script>
 </body>
 </html>
-
