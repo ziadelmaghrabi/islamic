@@ -44,6 +44,8 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);overflow-x
 .header-title{flex:1;text-align:center;font-size:24px;font-weight:bold;color:var(--accent);}
 #scrollInfo{position:sticky;top:0;background:var(--panel);color:var(--accent);padding:6px 10px;font-weight:bold;font-size:16px;border-bottom:1px solid var(--border);text-align:center;z-index:100;display:none;}
 .home{flex:1;overflow:auto;padding:10px;display:flex;flex-direction:column;align-items:center;position:relative;margin-bottom:60px;}
+ 
+
 #salatBox{width:100%;text-align:center;font-size:18px;color:#000;background:linear-gradient(135deg,var(--accent),#ffaa00);padding:10px 0;border-radius:12px;box-shadow:0 4px 15px rgba(0,0,0,0.5);font-weight:bold;z-index:100;margin-bottom:20px;}
 .tasbeeh{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:25px;width:100%;max-width:1000px;margin-bottom:20px;}
 .circle-box{position:relative;width:100%;max-width:200px;aspect-ratio:1;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;user-select:none;transition:transform 0.2s,box-shadow 0.3s;}
@@ -94,6 +96,17 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);overflow-x
   color:#000;
   box-shadow:0 0 12px gold;
 }
+#bgVideo {
+  position: fixed; /* ثابت مع السكرول */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* يملأ الشاشة بدون تشويه */
+  z-index: -1; /* تحت كل العناصر */
+  opacity: 0.9; /* اختيارية: تخفف سطوع الفيديو */
+}
+
 
 </style>
 
@@ -138,6 +151,9 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);overflow-x
     </div>
     <div id="scrollInfo">الجزء: <span id="juz-bar">-</span> | الحزب: <span id="hizb-bar">-</span></div>
     <div class="home" id="home">
+      <video autoplay muted loop id="bgVideo">
+    <source src="2711127-uhd_3840_2160_24.mp4.mp4" type="video/mp4">
+  </video>
       <div id="salatBox">صلى على النبي ﷺ</div>
       <div class="tasbeeh" id="tasbeeh-container"></div>
       <!-- ===== ختمة 15 يوم ===== -->
