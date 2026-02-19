@@ -13,9 +13,6 @@
   --border:#444;
   --text:#f0f0f0;
   --accent:#ffcc00;
-  --green-bg:#e6f9e6;
-  --green-panel:#d4f0d4;
-  --green-accent:#0a8c0a;
 }
 .light{
   --bg:#f5f0e1;
@@ -29,7 +26,7 @@
   --panel:#e6f6e6; 
   --border:#b7d7b7;
   --text:#0a8c0a;
-  --accent:var(--green-accent);
+  --accent:#0a8c0a;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
@@ -99,6 +96,7 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);overflow-x
 }
 
 </style>
+
 </head>
 <body>
 
@@ -519,74 +517,52 @@ function loadKhatmaDay(day, startJuz, endJuz){
       obs.observe(a);
 
       // آخر آية في اليوم: إضافة أزرار إتمام/إلغاء اليوم
-      if(index === allVerses.length - 1){
-        const btnContainer = document.createElement("div");
-        btnContainer.style.marginTop = "10px";
-        btnContainer.style.display = "flex";
-        btnContainer.style.gap = "10px";
+     // آخر آية في اليوم: إضافة أزرار إتمام/إلغاء اليوم
+if(index === allVerses.length - 1){
+    const btnContainer = document.createElement("div");
+    btnContainer.style.marginTop = "10px";
+    btnContainer.style.display = "flex";
+    btnContainer.style.gap = "10px";
 
-        // زر إتمام اليوم
-        const completeBtn = document.createElement("button");
-        completeBtn.textContent = completedDays.includes(day) ? "تم الحمد لله ✅" : "اكمل اليوم";
-        completeBtn.style.padding = "6px 12px";
-        completeBtn.style.border = "none";
-        completeBtn.style.borderRadius = "8px";
-        completeBtn.style.background = completedDays.includes(day) ? "gold" : "var(--accent)";
-        completeBtn.style.color = "#000";
-        completeBtn.style.fontWeight = "bold";
-        completeBtn.style.cursor = "pointer";
+    const completeBtn = document.createElement("button");
+    completeBtn.textContent = completedDays.includes(day) ? "تم الحمد لله ✅" : "اكمل اليوم";
+    completeBtn.style.padding = "6px 12px";
+    completeBtn.style.border = "none";
+    completeBtn.style.borderRadius = "8px";
+    completeBtn.style.background = completedDays.includes(day) ? "gold" : "var(--accent)";
+    completeBtn.style.color = "#000";
+    completeBtn.style.fontWeight = "bold";
+    completeBtn.style.cursor = "pointer";
 
-        // زر إلغاء اليوم
-        const cancelBtn = document.createElement("button");
-        cancelBtn.textContent = "إلغاء ❌";
-        cancelBtn.style.padding = "6px 12px";
-        cancelBtn.style.border = "none";
-        cancelBtn.style.borderRadius = "8px";
-        cancelBtn.style.background = "var(--accent)";
-        cancelBtn.style.color = "#fff";
-        cancelBtn.style.fontWeight = "bold";
-        cancelBtn.style.cursor = "pointer";
-
-        completeBtn.onclick = () => {
-          let completed = storage.get("ramadanCompleted", []);
-          if(!completed.includes(day)){
-            completed.push(day);
-            storage.set("ramadanCompleted", completed);
-            completeBtn.style.background = "gold";
-            completeBtn.textContent = "تم الحمد لله ✅";
-            cancelBtn.style.background = "var(--accent)";
-            reader.querySelector(".ayah").parentElement.classList.add("completed");
-
-            // تحديث عداد الختمة
-            document.getElementById("khatmaCount").textContent = completed.length;
-            const percent = Math.floor((completed.length / KHATMA_DAYS) * 100);
-            document.getElementById("khatmaProgressBar").style.width = percent + "%";
-            document.getElementById("khatmaPercent").textContent = percent + "%";
-          }
-        };
-
-        cancelBtn.onclick = () => {
-          let completed = storage.get("ramadanCompleted", []);
-          const indexInCompleted = completed.indexOf(day);
-          if(indexInCompleted !== -1){
-            completed.splice(indexInCompleted, 1);
-            storage.set("ramadanCompleted", completed);
+    // عند الضغط على الزر يعكس حالة اليوم
+    completeBtn.onclick = () => {
+        let completed = storage.get("ramadanCompleted", []);
+        if(completed.includes(day)){
+            // إزالة اليوم
+            completed = completed.filter(d => d !== day);
             completeBtn.style.background = "var(--accent)";
             completeBtn.textContent = "اكمل اليوم";
             reader.querySelector(".ayah").parentElement.classList.remove("completed");
-
-            // تحديث عداد الختمة
-            document.getElementById("khatmaCount").textContent = completed.length;
-            const percent = Math.floor((completed.length / KHATMA_DAYS) * 100);
-            document.getElementById("khatmaProgressBar").style.width = percent + "%";
-            document.getElementById("khatmaPercent").textContent = percent + "%";
-          }
+        } else {
+            // إضافة اليوم
+            completed.push(day);
+            completeBtn.style.background = "gold";
+            completeBtn.textContent = "تم الحمد لله ✅";
+            reader.querySelector(".ayah").parentElement.classList.add("completed");
         }
+        storage.set("ramadanCompleted", completed);
 
-        btnContainer.appendChild(completeBtn);
-        btnContainer.appendChild(cancelBtn);
-        reader.appendChild(btnContainer);
-      }
+        // تحديث عداد الختمة
+        document.getElementById("khatmaCount").textContent = completed.length;
+        const percent = Math.floor((completed.length / KHATMA_DAYS) * 100);
+        document.getElementById("khatmaProgressBar").style.width = percent + "%";
+        document.getElementById("khatmaPercent").textContent = percent + "%";
+    };
+
+    btnContainer.appendChild(completeBtn);
+    reader.appendChild(btnContainer);
+}
+
     });
 
     scrollInfo.style.display = "block";
