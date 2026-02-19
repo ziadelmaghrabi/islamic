@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
@@ -6,6 +6,7 @@
 <title>📖 اقرأ</title>
 <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
 <style>
+
 :root{
   --bg:#1e1e1e;
   --panel:#2b2b2b;
@@ -77,6 +78,26 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);overflow-x
   .home{margin-bottom:80px;}
   .reader{margin-bottom:80px;}
 }
+.ramadan-day{
+  padding:10px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  cursor:pointer;
+  text-align:center;
+  font-weight:bold;
+  transition:.3s;
+}
+.ramadan-day:hover{
+  background:var(--accent);
+  color:#000;
+}
+.ramadan-day.completed{
+  background:gold;
+  color:#000;
+  box-shadow:0 0 12px gold;
+}
+
 </style>
 </head>
 <body>
@@ -121,6 +142,32 @@ body{font-family:'Amiri',serif;background:var(--bg);color:var(--text);overflow-x
     <div class="home" id="home">
       <div id="salatBox">صلى على النبي ﷺ</div>
       <div class="tasbeeh" id="tasbeeh-container"></div>
+      <!-- ===== ختمة 15 يوم ===== -->
+<h2 style="margin:20px 0 10px;color:var(--accent);text-align:center;">🌙 ختمة 15 يوم</h2>
+
+<div id="ramadanPlan" 
+style="display:grid;grid-template-columns:repeat(auto-fit,minmax(100px,1fr));gap:10px;width:100%;max-width:900px;margin-bottom:20px;">
+</div>
+
+<div style="background:var(--panel);padding:15px;border-radius:12px;width:100%;max-width:600px;text-align:center;margin-bottom:20px;">
+  
+  <div style="margin-bottom:10px;font-size:18px;">
+    📖 ختمات كاملة:
+    <span id="khatmaCount" style="color:var(--accent);font-weight:bold;">0</span>
+  </div>
+
+  <div style="background:#333;border-radius:20px;height:20px;overflow:hidden;">
+    <div id="khatmaProgressBar"
+         style="height:100%;width:0%;background:linear-gradient(90deg,var(--accent),gold);transition:.4s;">
+    </div>
+  </div>
+
+  <div style="margin-top:8px;font-size:14px;">
+    <span id="khatmaPercent">0%</span>
+  </div>
+
+</div>
+
     </div>
     <div class="reader" id="reader"></div>
     <div class="footer">📖 اقرأ 2026 © زياد أيمن المغربي</div>
@@ -332,9 +379,255 @@ window.addEventListener("load", () => {
     storage.set("visited", true); // حفظ أن المستخدم شاهد الرسالة
   };
 });
+// ===============================
+// 🌙 نظام ختمة 15 يوم (مرتبط بالأجزاء)
+// ===============================
+
+const KHATMA_DAYS = 15;
+const JUZZ_PER_DAY = 2;
+
+function initRamadanPlan(){
+
+  const ramadanPlan = document.getElementById("ramadanPlan");
+  if(!ramadanPlan) return;
+
+  ramadanPlan.innerHTML="";
+
+  const completed = storage.get("ramadanCompleted",[]);
+  const khatmaCount = storage.get("khatmaCount",0);
+
+  document.getElementById("khatmaCount").textContent = khatmaCount;
+
+  const percent = Math.floor((completed.length / KHATMA_DAYS) * 100);
+  document.getElementById("khatmaProgressBar").style.width = percent + "%";
+  document.getElementById("khatmaPercent").textContent = percent + "%";
+
+for(let i=1;i<=KHATMA_DAYS;i++){
+  const startJuz = ((i-1)*JUZZ_PER_DAY)+1;
+  const endJuz = startJuz+1;
+
+  const box = document.createElement("div");
+  box.className="ramadan-day";
+  if(completed.includes(i)) box.classList.add("completed");
+
+  box.innerHTML = `
+    اليوم ${i}<br>
+    <small>جزء ${startJuz} - ${endJuz}</small>
+  `;
+
+  // عند الضغط على اليوم، تحميل ختمة اليوم
+  box.onclick = () => loadKhatmaDay(i, startJuz, endJuz);
+
+  ramadanPlan.appendChild(box);
+}
+
+}
+
+function loadKhatmaDay(day, startJuz, endJuz){
+  home.style.display = "none";
+  reader.style.display = "block";
+  title.textContent = `  ختمة رمضان - اليوم ${day}`;
+  tasbeehContainer.style.display = "none";
+
+  if(currentAudio){ currentAudio.pause(); currentAudio = null; }
+
+  reader.innerHTML = "جاري تحميل الجزء...";
+
+  let allVerses = [];
+
+  // جلب الجزئين
+  Promise.all([
+    fetch(`https://api.quran.com/api/v4/verses/by_juz/${startJuz}?fields=text_uthmani,juz_number,hizb_number,verse_number,chapter_id&per_page=300`).then(r=>r.json()),
+    fetch(`https://api.quran.com/api/v4/verses/by_juz/${endJuz}?fields=text_uthmani,juz_number,hizb_number,verse_number,chapter_id&per_page=300`).then(r=>r.json())
+  ])
+  .then(([d1,d2])=>{
+    allVerses = d1.verses.concat(d2.verses);
+
+    // ترتيب حسب السورة ثم الآية
+    allVerses.sort((a,b)=>{
+      if(a.chapter_id !== b.chapter_id) return a.chapter_id - b.chapter_id;
+      return a.verse_number - b.verse_number;
+    });
+
+    reader.innerHTML = "";
+
+    let currentSurah = null;
+    const obs = new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          juzBar.textContent = e.target.dataset.juz;
+          hizbBar.textContent = e.target.dataset.hizb;
+        }
+      });
+    }, {root: reader, rootMargin:'-50% 0px -50% 0px', threshold:0});
+
+    const completedDays = storage.get("ramadanCompleted",[]);
+
+    allVerses.forEach((v,index)=>{
+      const surahName = allSurahs[v.chapter_id - 1];
+
+      // شريط اسم السورة
+      if(currentSurah !== v.chapter_id){
+        currentSurah = v.chapter_id;
+        const surahDiv = document.createElement("div");
+        surahDiv.style.background = "var(--panel)";
+        surahDiv.style.color = "var(--accent)";
+        surahDiv.style.fontWeight = "bold";
+        surahDiv.style.padding = "6px 10px";
+        surahDiv.style.margin = "10px 0 5px";
+        surahDiv.style.borderRadius = "8px";
+        surahDiv.textContent = `سورة ${surahName}`;
+        reader.appendChild(surahDiv);
+      }
+
+      const a = document.createElement("div");
+      a.className = "ayah";
+      a.dataset.juz = v.juz_number;
+      a.dataset.hizb = v.hizb_number;
+
+      const txt = document.createElement("span");
+      txt.textContent = v.text_uthmani;
+      txt.style.fontSize = ayahFontSize + "px";
+
+      const num = document.createElement("span");
+      num.className = "ayah-number";
+      num.textContent = v.verse_number;
+
+      // تشغيل الصوت عند النقر
+      num.onclick = ()=>{
+        if(currentAudio){ currentAudio.pause(); currentAudio = null; }
+        if(lastActiveAyah){ lastActiveAyah.classList.remove("active"); lastActiveAyah.parentElement.classList.remove("active-voice"); }
+        currentAudio = new Audio(`https://cdn.islamic.network/quran/audio/128/ar.alafasy/${v.id}.mp3`);
+        currentAudio.play().catch(()=>{});
+        num.classList.add("active");
+        a.classList.add("active-voice");
+        lastActiveAyah = num;
+      }
+
+      // حفظ العلامة عند الضغط الطويل
+      let longPressTimer;
+      const startLongPress = ()=>{ longPressTimer=setTimeout(()=>{ saveBookmark(surahName,v.verse_number); document.querySelectorAll(".ayah-number.bookmark").forEach(n=>n.classList.remove("bookmark")); num.classList.add("bookmark"); },800); }
+      const cancelLongPress = ()=>{ clearTimeout(longPressTimer); }
+      num.addEventListener("mousedown", startLongPress);
+      num.addEventListener("touchstart", startLongPress);
+      num.addEventListener("mouseup", cancelLongPress);
+      num.addEventListener("mouseleave", cancelLongPress);
+      num.addEventListener("touchend", cancelLongPress);
+
+      a.append(txt,num);
+      reader.appendChild(a);
+      obs.observe(a);
+
+      // آخر آية في اليوم: إضافة أزرار إتمام/إلغاء اليوم
+      if(index === allVerses.length - 1){
+        const btnContainer = document.createElement("div");
+        btnContainer.style.marginTop = "10px";
+        btnContainer.style.display = "flex";
+        btnContainer.style.gap = "10px";
+
+        // زر إتمام اليوم
+        const completeBtn = document.createElement("button");
+        completeBtn.textContent = completedDays.includes(day) ? "تم الحمد لله ✅" : "اكمل اليوم";
+        completeBtn.style.padding = "6px 12px";
+        completeBtn.style.border = "none";
+        completeBtn.style.borderRadius = "8px";
+        completeBtn.style.background = completedDays.includes(day) ? "gold" : "var(--accent)";
+        completeBtn.style.color = "#000";
+        completeBtn.style.fontWeight = "bold";
+        completeBtn.style.cursor = "pointer";
+
+        // زر إلغاء اليوم
+        const cancelBtn = document.createElement("button");
+        cancelBtn.textContent = "إلغاء ❌";
+        cancelBtn.style.padding = "6px 12px";
+        cancelBtn.style.border = "none";
+        cancelBtn.style.borderRadius = "8px";
+        cancelBtn.style.background = "var(--accent)";
+        cancelBtn.style.color = "#fff";
+        cancelBtn.style.fontWeight = "bold";
+        cancelBtn.style.cursor = "pointer";
+
+        completeBtn.onclick = () => {
+          let completed = storage.get("ramadanCompleted", []);
+          if(!completed.includes(day)){
+            completed.push(day);
+            storage.set("ramadanCompleted", completed);
+            completeBtn.style.background = "gold";
+            completeBtn.textContent = "تم الحمد لله ✅";
+            cancelBtn.style.background = "var(--accent)";
+            reader.querySelector(".ayah").parentElement.classList.add("completed");
+
+            // تحديث عداد الختمة
+            document.getElementById("khatmaCount").textContent = completed.length;
+            const percent = Math.floor((completed.length / KHATMA_DAYS) * 100);
+            document.getElementById("khatmaProgressBar").style.width = percent + "%";
+            document.getElementById("khatmaPercent").textContent = percent + "%";
+          }
+        };
+
+        cancelBtn.onclick = () => {
+          let completed = storage.get("ramadanCompleted", []);
+          const indexInCompleted = completed.indexOf(day);
+          if(indexInCompleted !== -1){
+            completed.splice(indexInCompleted, 1);
+            storage.set("ramadanCompleted", completed);
+            completeBtn.style.background = "var(--accent)";
+            completeBtn.textContent = "اكمل اليوم";
+            reader.querySelector(".ayah").parentElement.classList.remove("completed");
+
+            // تحديث عداد الختمة
+            document.getElementById("khatmaCount").textContent = completed.length;
+            const percent = Math.floor((completed.length / KHATMA_DAYS) * 100);
+            document.getElementById("khatmaProgressBar").style.width = percent + "%";
+            document.getElementById("khatmaPercent").textContent = percent + "%";
+          }
+        }
+
+        btnContainer.appendChild(completeBtn);
+        btnContainer.appendChild(cancelBtn);
+        reader.appendChild(btnContainer);
+      }
+    });
+
+    scrollInfo.style.display = "block";
+  });
+}
+
+
+
+ 
+function finishKhatmaDay(day){
+
+  let completed = storage.get("ramadanCompleted",[]);
+
+  if(!completed.includes(day)){
+    completed.push(day);
+    storage.set("ramadanCompleted",completed);
+  }
+
+  if(completed.length === KHATMA_DAYS){
+
+    let khatmaCount = storage.get("khatmaCount",0);
+    khatmaCount++;
+
+    storage.set("khatmaCount",khatmaCount);
+    storage.set("ramadanCompleted",[]);
+
+    alert("🎉 ما شاء الله! أتممت ختمة كاملة 🎉");
+  }
+
+  showHome();
+  initRamadanPlan();
+}
 
 // ---------- Init ----------
-window.addEventListener("load",()=>{initTasbeeh();loadBookmark();showHome();});
+ window.addEventListener("load",()=>{
+  initTasbeeh();
+  loadBookmark();
+  showHome();
+  initRamadanPlan();
+});
+
 </script>
 </body>
 </html>
